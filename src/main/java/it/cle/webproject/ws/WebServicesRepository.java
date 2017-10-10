@@ -735,8 +735,7 @@ public class WebServicesRepository {
 						   String password = json.get("password").toString();
 //						    String mail_decoded = URLDecoder.decode(mail_encoded, "UTF-8");
 						    
-						 String userRegistered=  userService_ws.userRegistered(mail, password);
-						  result = gson.toJson(userRegistered);
+						 String userRegistered=  userService_ws.userRegistered(mail, password);						  result = gson.toJson(userRegistered);
 					
 					 }
 				        catch(Exception e) {
