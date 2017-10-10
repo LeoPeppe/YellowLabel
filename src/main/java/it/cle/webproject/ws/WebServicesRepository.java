@@ -718,7 +718,7 @@ public class WebServicesRepository {
 			 
 			 
 			 
-			 @RequestMapping(value = "/userRegistered", method = RequestMethod.POST,headers="Accept=application/json")
+			 @RequestMapping(value = "/getuserRegistered", method = RequestMethod.POST,headers="Accept=application/json")
 				@ResponseBody
 				public  String getUserRegistered(@RequestBody String email_password) {
 					logger.info("Start getUserRegistered with parameter ="+email_password);
