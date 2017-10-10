@@ -1,0 +1,21 @@
+package it.cle.webproject.utils;
+
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.module.jsonSchema.JsonSchema;
+import com.fasterxml.jackson.module.jsonSchema.factories.SchemaFactoryWrapper;
+
+public class Utils {
+
+	public static <T> JsonSchema JSONSchemaMapper(Class<T> o) throws JsonProcessingException{
+	    
+	    ObjectMapper mapper = new ObjectMapper();
+        SchemaFactoryWrapper visitor = new SchemaFactoryWrapper();
+        mapper.acceptJsonFormatVisitor(o, visitor);
+        JsonSchema schema = visitor.finalSchema();
+        //System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(schema));
+		return schema;
+	}
+	
+}

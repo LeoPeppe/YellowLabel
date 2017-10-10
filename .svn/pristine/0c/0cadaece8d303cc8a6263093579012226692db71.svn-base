@@ -1,0 +1,466 @@
+package it.cle.webproject.ws;
+
+
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.AnnotationConfigContextLoader;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+
+	 
+
+
+
+
+// TODO: Auto-generated Javadoc
+/**
+ * The Class WebServicesRepositoryTest.
+ */
+@ContextConfiguration(loader = AnnotationConfigContextLoader.class  )
+@RunWith(SpringJUnit4ClassRunner.class)
+@WebAppConfiguration
+
+
+/**
+ * Testsuite CDPWebService
+ * @author pierluigi.anaclerio
+ *
+ */
+public class WebServicesRepositoryTest {
+	
+	
+	 /** The mock mvc. */
+ 	private MockMvc mockMvc;
+	 
+	 
+	 
+	 /** The wsr. */
+ 	WebServicesRepository wsr;
+	
+	 
+	 /**
+ 	 * Sets the up.
+ 	 *
+ 	 * @throws Exception the exception
+ 	 */
+ 	@Before
+	  public void setUp() throws Exception {
+
+	   this.mockMvc = MockMvcBuilders.standaloneSetup(new WebServicesRepository()).build();
+	  }
+	 
+	 /**
+ 	 * Test indice adl.
+ 	 *
+ 	 * @throws Exception the exception
+ 	 */
+// 	@Test
+//	 public void testIndiceADL() throws Exception{
+//		 
+//		this.mockMvc.perform(post("/indiceADLXML").contentType(MediaType.APPLICATION_XML).content("<indice_adl><fAlimentazione> 2 </fAlimentazione>"
+//				+"<fBagnoDoccia> 2 </fBagnoDoccia>"+
+//				"<fIgienePersonale> 1 </fIgienePersonale>"+"<fAbbigliamento> 2 </fAbbigliamento>"+"<fContinenzaIntestinale> 5 </fContinenzaIntestinale>"+
+//				"<fContinenzaUrinaria> 5 </fContinenzaUrinaria>"+"<fUsoGabinetto> 10 </fUsoGabinetto>"+ "<valoreIndiceADL> 27</valoreIndiceADL>"+"</indice_adl>"))
+//		.andExpect(status().isOk());
+//		//assertTrue(true);
+//	}
+
+// 	 /**
+// 	 * Test indiceSPMSQXML.
+// 	 *
+// 	 * @throws Exception the exception
+// 	 */
+// 	@Test
+//	 public void testIndiceSPMSQXML() throws Exception{
+//		 
+//		this.mockMvc.perform(post("/indiceSPMSQXML").contentType(MediaType.APPLICATION_XML).content("<indice_spmsq> " + 
+// "  <domandaGiornoOdierno>true</domandaGiornoOdierno> " + 
+// "  <domandaGiornoSettimanale>true</domandaGiornoSettimanale> " + 
+// "  <domandaNomePosto>true</domandaNomePosto> " + 
+// "  <domandaIndirizzo>true</domandaIndirizzo> " + 
+// "  <domandaAnni>true </domandaAnni> " + 
+// "  <domandaDataNascita>true</domandaDataNascita> " + 
+// "  <domandaPresRepPapa>true</domandaPresRepPapa> " + 
+// "  <domandaPrecedentePresRepPapa>true</domandaPrecedentePresRepPapa> " + 
+// "  <domandaNomeMadre>true</domandaNomeMadre> " + 
+// "  <domandaSottrazione>false</domandaSottrazione> " + 
+// "  <nonSomministrabile>false</nonSomministrabile> " + 
+// "</indice_spmsq> "))
+//		.andExpect(status().isOk());
+//		//assertTrue(true);
+//	}
+	
+//
+//	 /**
+//	 * Test ComponiFatturaXML.
+//	 *
+//	 * @throws Exception the exception
+//	 */
+//	@Test
+//	 public void testComponiFatturaXML() throws Exception{
+//		 
+//		this.mockMvc.perform(post("/componiFatturaXML").contentType(MediaType.APPLICATION_XML).content("<componi_fattura> " + 
+//				 "  <dati_input_fattura> " + 
+//				 "    <costo_prestazioni> " + 
+//				 "        <prestazione>Ciao</prestazione> " + 
+//				 "        <num_prestazioni>1</num_prestazioni> " + 
+//				 "        <costo_unitario>20</costo_unitario> " + 
+//				 "        <importo_prestazioni>1</importo_prestazioni>   " + 
+//				 "    </costo_prestazioni> " + 
+//				 "  </dati_input_fattura> " + 
+//				 "  <totaleFattura>20</totaleFattura> " + 
+//				 "  <comuneFattura>Bari</comuneFattura> " + 
+//				 "  <dataDaFattura>01/10/1985</dataDaFattura> " + 
+//				 "  <dataAFattura>10/02/2016</dataAFattura> " + 
+//				 "</componi_fattura> "))
+//		.andExpect(status().isOk());
+//		//assertTrue(true);
+//	}
+	
+//	 /**
+//		 * Test indiceExtonSmithXML.
+//		 *
+//		 * @throws Exception the exception
+//		 */
+//		@Test
+//		 public void testExtonSmithXML() throws Exception{
+//			 
+//			this.mockMvc.perform(post("/indiceExtonSmithXML").contentType(MediaType.APPLICATION_XML).content("<indice_exton_smith> " + 
+//					 "  <pPresenzaPiaghe>15</pPresenzaPiaghe> " + 
+//					 "  <pDecubitiCondGen>3 </pDecubitiCondGen> " + 
+//					 "  <pDecubitiStatoMen>2</pDecubitiStatoMen> " + 
+//					 "  <pDecubitiAttivita>3</pDecubitiAttivita> " + 
+//					 "  <pDecubitiMobilita>1</pDecubitiMobilita> " + 
+//					 "  <pDecubitiIncontinenza>1</pDecubitiIncontinenza> " + 
+//					 "</indice_exton_smith> "))
+//			.andExpect(status().isOk());
+//		}
+//		
+		
+		
+//		/**
+//		 * Test indiceNPIXML.
+//		 *
+//		 * @throws Exception the exception
+//		 */
+//		@Test
+//		 public void testIndiceNPIXML() throws Exception{
+//			 
+//			this.mockMvc.perform(post("/indiceNPIXML").contentType(MediaType.APPLICATION_XML).content("<indice_npi> " + 
+//					 "  <agitazioneAggressivita> " + 
+//					 "    <nonApplicabile>false</nonApplicabile> " + 
+//					 "    <motivazione> </motivazione> " + 
+//					 "    <domandaPreliminare>false</domandaPreliminare> " + 
+//					 "    <fDomandaIrritabile>1</fDomandaIrritabile> " + 
+//					 "    <gDomandaIrritabile>2</gDomandaIrritabile> " + 
+//					 "    <fDomandaOstinato>2</fDomandaOstinato> " + 
+//					 "    <gDomandaOstinato>1</gDomandaOstinato> " + 
+//					 "    <fDomandaNonCollabora>3</fDomandaNonCollabora> " + 
+//					 "    <gDomandaNonCollabora>1</gDomandaNonCollabora> " + 
+//					 "    <fDomandaAltriComportamenti>2</fDomandaAltriComportamenti> " + 
+//					 "    <gDomandaAltriComportamenti>1</gDomandaAltriComportamenti> " + 
+//					 "    <fDomandaBestemmie>2</fDomandaBestemmie> " + 
+//					 "    <gDomandaBestemmie>2</gDomandaBestemmie> " + 
+//					 "    <fDomandaLanciaOggetti>1</fDomandaLanciaOggetti> " + 
+//					 "    <gDomandaLanciaOggetti>3</gDomandaLanciaOggetti> " + 
+//					 "    <fDomandaColpireAltri>1</fDomandaColpireAltri> " + 
+//					 "    <gDomandaColpireAltri>2</gDomandaColpireAltri> " + 
+//					 "    <fDomandaAltriComportamentiAggressivi>1</fDomandaAltriComportamentiAggressivi> " + 
+//					 "    <gDomandaAltriComportamentiAggressivi>1</gDomandaAltriComportamentiAggressivi> " + 
+//					 "  </agitazioneAggressivita> " + 
+//					 "		 " + 
+//					 "  <allucinazioni> " + 
+//					 "    <nonApplicabile>false</nonApplicabile> " + 
+//					 "    <motivazione></motivazione> " + 
+//					 "    <domandaPreliminare>true</domandaPreliminare> " + 
+//					 "    <fDomandaVoci>1</fDomandaVoci> " + 
+//					 "    <gDomandaVoci>2</gDomandaVoci> " + 
+//					 "    <fDomandaPersoneNonPresenti>2</fDomandaPersoneNonPresenti> " + 
+//					 "    <gDomandaPersoneNonPresenti>1</gDomandaPersoneNonPresenti> " + 
+//					 "    <fDomandaVisioneCose>3</fDomandaVisioneCose> " + 
+//					 "    <gDomandaVisioneCose>1</gDomandaVisioneCose> " + 
+//					 "    <fDomandaOdori>2</fDomandaOdori> " + 
+//					 "    <gDomandaOdori>1</gDomandaOdori> " + 
+//					 "    <fDomandaToccoPelle>2</fDomandaToccoPelle> " + 
+//					 "    <gDomandaToccoPelle>2</gDomandaToccoPelle> " + 
+//					 "    <fDomandaSapori>1</fDomandaSapori> " + 
+//					 "    <gDomandaSapori>3</gDomandaSapori> " + 
+//					 "    <fDomandaEsperienzeSensoriali>1</fDomandaEsperienzeSensoriali> " + 
+//					 "    <gDomandaEsperienzeSensoriali>2</gDomandaEsperienzeSensoriali> " + 
+//					 "  </allucinazioni> " + 
+//					 "   " + 
+//					 "   " + 
+//					 "  <ansia> " + 
+//					 "    <nonApplicabile>false</nonApplicabile> " + 
+//					 "    <motivazione></motivazione> " + 
+//					 "    <domandaPreliminare>true</domandaPreliminare> " + 
+//					 "    <fDomandaFuturo>1</fDomandaFuturo> " + 
+//					 "    <gDomandaFuturo>2</gDomandaFuturo> " + 
+//					 "    <fDomandaEccessivamenteTeso>2</fDomandaEccessivamenteTeso> " + 
+//					 "    <gDomandaEccessivamenteTeso>1</gDomandaEccessivamenteTeso> " + 
+//					 "    <fDomandaRespiroCorto>3</fDomandaRespiroCorto> " + 
+//					 "    <gDomandaRespiroCorto>1</gDomandaRespiroCorto> " + 
+//					 "    <fDomandaRane>2</fDomandaRane> " + 
+//					 "    <gDomandaRane>1</gDomandaRane> " + 
+//					 "    <fDomandaEvitaLuoghi>2</fDomandaEvitaLuoghi> " + 
+//					 "    <gDomandaEvitaLuoghi>2</gDomandaEvitaLuoghi> " + 
+//					 "    <fDomandaDiventaNervoso>1</fDomandaDiventaNervoso> " + 
+//					 "    <gDomandaDiventaNervoso>3</gDomandaDiventaNervoso> " + 
+//					 "    <fDomandaManifestaAnsia>1</fDomandaManifestaAnsia> " + 
+//					 "    <gDomandaManifestaAnsia>2</gDomandaManifestaAnsia> " + 
+//					 "  </ansia> " + 
+//					 "   " + 
+//					 "   " + 
+//					 "  <apatiaIndifferenza> " + 
+//					 "    <nonApplicabile>false</nonApplicabile> " + 
+//					 "    <motivazione></motivazione> " + 
+//					 "    <domandaPreliminare>true</domandaPreliminare> " + 
+//					 "    <fDomandaMenoSpontaneo>1</fDomandaMenoSpontaneo> " + 
+//					 "    <gDomandaMenoSpontaneo>2</gDomandaMenoSpontaneo> " + 
+//					 "    <fDomandaMenoDisponibile>2</fDomandaMenoDisponibile> " + 
+//					 "    <gDomandaMenoDisponibile>1</gDomandaMenoDisponibile> " + 
+//					 "    <fDomandaMenoAffettuoso>3</fDomandaMenoAffettuoso> " + 
+//					 "    <gDomandaMenoAffettuoso>1</gDomandaMenoAffettuoso> " + 
+//					 "    <fDomandaContribuisceMeno>2</fDomandaContribuisceMeno> " + 
+//					 "    <gDomandaContribuisceMeno>1</gDomandaContribuisceMeno> " + 
+//					 "    <fDomandaMenoInteressato>2</fDomandaMenoInteressato> " + 
+//					 "    <gDomandaMenoInteressato>2</gDomandaMenoInteressato> " + 
+//					 "    <fDomandaMenoInteresseAmici>1</fDomandaMenoInteresseAmici> " + 
+//					 "    <gDomandaMenoInteresseAmici>3</gDomandaMenoInteresseAmici> " + 
+//					 "    <fDomandaMenoEntusiasta>1</fDomandaMenoEntusiasta> " + 
+//					 "    <gDomandaMenoEntusiasta>2</gDomandaMenoEntusiasta> " + 
+//					 "    <fDomandaAltriSegni>1</fDomandaAltriSegni> " + 
+//					 "    <gDomandaAltriSegni>1</gDomandaAltriSegni> " + 
+//					 "  </apatiaIndifferenza> " + 
+//					 "   " + 
+//					 "  <attivitaMotoriaAberrante>  " + 
+//					 "    <nonApplicabile>false</nonApplicabile> " + 
+//					 "    <motivazione></motivazione> " + 
+//					 "    <domandaPreliminare>true</domandaPreliminare> " + 
+//					 "    <fDomandaCammina>1</fDomandaCammina> " + 
+//					 "    <gDomandaCammina>2</gDomandaCammina> " + 
+//					 "    <fDomandaRovistaCassetti>2</fDomandaRovistaCassetti> " + 
+//					 "    <gDomandaRovistaCassetti>1</gDomandaRovistaCassetti> " + 
+//					 "    <fDomandaVestiti>3</fDomandaVestiti> " + 
+//					 "    <gDomandaVestiti>1</gDomandaVestiti> " + 
+//					 "    <fDomandaAzioniRipetute>2</fDomandaAzioniRipetute> " + 
+//					 "    <gDomandaAzioniRipetute>1</gDomandaAzioniRipetute> " + 
+//					 "    <fDomandaAzioniRipetuteContinuamente>2</fDomandaAzioniRipetuteContinuamente> " + 
+//					 "    <gDomandaAzioniRipetuteContinuamente>2</gDomandaAzioniRipetuteContinuamente> " + 
+//					 "  </attivitaMotoriaAberrante> " + 
+//					 "   " + 
+//					 "  <deliri> " + 
+//					 "    <nonApplicabile>false </nonApplicabile> " + 
+//					 "    <motivazione></motivazione> " + 
+//					 "    <domandaPreliminare>true</domandaPreliminare> " + 
+//					 "    <fDomandaPericolo>1</fDomandaPericolo> " + 
+//					 "    <gDomandaPericolo>2</gDomandaPericolo> " + 
+//					 "    <fDomandaDerubato>2</fDomandaDerubato> " + 
+//					 "    <gDomandaDerubato>1</gDomandaDerubato> " + 
+//					 "    <fDomandaTradimento>3</fDomandaTradimento> " + 
+//					 "    <gDomandaTradimento>1</gDomandaTradimento> " + 
+//					 "    <fDomandaOspitiIndesiderati>2</fDomandaOspitiIndesiderati> " + 
+//					 "    <gDomandaOspitiIndesiderati>1</gDomandaOspitiIndesiderati> " + 
+//					 "    <fDomandaPersoneSconosciute>2</fDomandaPersoneSconosciute> " + 
+//					 "    <gDomandaPersoneSconosciute>2</gDomandaPersoneSconosciute> " + 
+//					 "    <fDomandaAbitazione>1</fDomandaAbitazione> " + 
+//					 "    <gDomandaAbitazione>3</gDomandaAbitazione> " + 
+//					 "    <fDomandaAbbandono>1</fDomandaAbbandono> " + 
+//					 "    <gDomandaAbbandono>2</gDomandaAbbandono> " + 
+//					 "    <fDomandaPresenzeInCasa>1</fDomandaPresenzeInCasa> " + 
+//					 "    <gDomandaPresenzeInCasa>1</gDomandaPresenzeInCasa> " + 
+//					 "    <fDomandaAltreCose>1</fDomandaAltreCose> " + 
+//					 "    <gDomandaAltreCose>1</gDomandaAltreCose> " + 
+//					 "  </deliri> " + 
+//					 "   " + 
+//					 "  <depressioneDisforia>  " + 
+//					 "    <nonApplicabile>false </nonApplicabile> " + 
+//					 "    <motivazione></motivazione> " + 
+//					 "    <domandaPreliminare>true</domandaPreliminare> " + 
+//					 "    <fDomandaMalinconia>1</fDomandaMalinconia> " + 
+//					 "    <gDomandaMalinconia>2</gDomandaMalinconia> " + 
+//					 "    <fDomandaTristezza>2</fDomandaTristezza> " + 
+//					 "    <gDomandaTristezza>1</gDomandaTristezza> " + 
+//					 "    <fDomandaFallito>3</fDomandaFallito> " + 
+//					 "    <gDomandaFallito>1</gDomandaFallito> " + 
+//					 "    <fDomandaPersonaCattiva>2</fDomandaPersonaCattiva> " + 
+//					 "    <gDomandaPersonaCattiva>1</gDomandaPersonaCattiva> " + 
+//					 "    <fDomandaScoraggiato>2</fDomandaScoraggiato> " + 
+//					 "    <gDomandaScoraggiato>2</gDomandaScoraggiato> " + 
+//					 "    <fDomandaPeso>1</fDomandaPeso> " + 
+//					 "    <gDomandaPeso>3</gDomandaPeso> " + 
+//					 "    <fDomandaSuicidio>1</fDomandaSuicidio> " + 
+//					 "    <gDomandaSuicidio>2</gDomandaSuicidio> " + 
+//					 "    <fDomandaAltriSegni>1</fDomandaAltriSegni> " + 
+//					 "    <gDomandaAltriSegni>1</gDomandaAltriSegni> " + 
+//					 "  </depressioneDisforia> " + 
+//					 "   " + 
+//					 "  <disinibizione>  " + 
+//					 "    <nonApplicabile>false </nonApplicabile> " + 
+//					 "    <motivazione></motivazione> " + 
+//					 "    <domandaPreliminare>true</domandaPreliminare> " + 
+//					 "    <fDomandaImpulsivo>1</fDomandaImpulsivo> " + 
+//					 "    <gDomandaImpulsivo>2</gDomandaImpulsivo> " + 
+//					 "    <fDomandaEstranei>2</fDomandaEstranei> " + 
+//					 "    <gDomandaEstranei>1</gDomandaEstranei> " + 
+//					 "    <fDomandaOffensive>3</fDomandaOffensive> " + 
+//					 "    <gDomandaOffensive>1</gDomandaOffensive> " + 
+//					 "    <fDomandaCoseVolgari>2</fDomandaCoseVolgari> " + 
+//					 "    <gDomandaCoseVolgari>1</gDomandaCoseVolgari> " + 
+//					 "    <fDomandaCosePrivate>2</fDomandaCosePrivate> " + 
+//					 "    <gDomandaCosePrivate>2</gDomandaCosePrivate> " + 
+//					 "    <fDomandaLiberta>1</fDomandaLiberta> " + 
+//					 "    <gDomandaLiberta>3</gDomandaLiberta> " + 
+//					 "    <fDomandaAltriSegni>1</fDomandaAltriSegni> " + 
+//					 "    <gDomandaAltriSegni>2</gDomandaAltriSegni> " + 
+//					 "  </disinibizione> " + 
+//					 "   " + 
+//					 "  <disturbiAlimentazione>  " + 
+//					 "    <nonApplicabile>false </nonApplicabile> " + 
+//					 "    <motivazione></motivazione> " + 
+//					 "    <domandaPreliminare>true</domandaPreliminare> " + 
+//					 "    <fDomandaPerditaAppetito>1</fDomandaPerditaAppetito> " + 
+//					 "    <gDomandaPerditaAppetito>2</gDomandaPerditaAppetito> " + 
+//					 "    <fDomandaAumentoAppetito>2</fDomandaAumentoAppetito> " + 
+//					 "    <gDomandaAumentoAppetito>1</gDomandaAumentoAppetito> " + 
+//					 "    <fDomandaPerditaPeso>3</fDomandaPerditaPeso> " + 
+//					 "    <gDomandaPerditaPeso>1</gDomandaPerditaPeso> " + 
+//					 "    <fDomandaAumentoPeso>2</fDomandaAumentoPeso> " + 
+//					 "    <gDomandaAumentoPeso>1</gDomandaAumentoPeso> " + 
+//					 "    <fDomandaCambioAbitudiniAlimentari>2</fDomandaCambioAbitudiniAlimentari> " + 
+//					 "    <gDomandaCambioAbitudiniAlimentari>2</gDomandaCambioAbitudiniAlimentari> " + 
+//					 "    <fDomandaCambioGustiAlimentari>1</fDomandaCambioGustiAlimentari> " + 
+//					 "    <gDomandaCambioGustiAlimentari>3</gDomandaCambioGustiAlimentari> " + 
+//					 "    <fDomandaSpecificheAbitudini>1</fDomandaSpecificheAbitudini> " + 
+//					 "    <gDomandaSpecificheAbitudini>2</gDomandaSpecificheAbitudini> " + 
+//					 "    <fDomandaAltriDisturbi>1</fDomandaAltriDisturbi> " + 
+//					 "    <gDomandaAltriDisturbi>1</gDomandaAltriDisturbi> " + 
+//					 "  </disturbiAlimentazione> " + 
+//					 "   " + 
+//					 "  <disturbiSonno> " + 
+//					 "    <nonApplicabile>false </nonApplicabile> " + 
+//					 "    <motivazione></motivazione> " + 
+//					 "    <domandaPreliminare>true</domandaPreliminare> " + 
+//					 "    <fDomandaAddormentarsi>1</fDomandaAddormentarsi> " + 
+//					 "    <gDomandaAddormentarsi>2</gDomandaAddormentarsi> " + 
+//					 "    <fDomandaAlzaDuranteNotte>2</fDomandaAlzaDuranteNotte> " + 
+//					 "    <gDomandaAlzaDuranteNotte>1</gDomandaAlzaDuranteNotte> " + 
+//					 "    <fDomandaVaga>3</fDomandaVaga> " + 
+//					 "    <gDomandaVaga>1</gDomandaVaga> " + 
+//					 "    <fDomandaDisturba>2</fDomandaDisturba> " + 
+//					 "    <gDomandaDisturba>1</gDomandaDisturba> " + 
+//					 "    <fDomandaEsceDiCasa>2</fDomandaEsceDiCasa> " + 
+//					 "    <gDomandaEsceDiCasa>2</gDomandaEsceDiCasa> " + 
+//					 "    <fDomandaSiSvegliaPresto>1</fDomandaSiSvegliaPresto> " + 
+//					 "    <gDomandaSiSvegliaPresto>3</gDomandaSiSvegliaPresto> " + 
+//					 "    <fDomandaDormeEccessivamente>1</fDomandaDormeEccessivamente> " + 
+//					 "    <gDomandaDormeEccessivamente>2</gDomandaDormeEccessivamente> " + 
+//					 "    <fDomandaAltriDisturbi>1</fDomandaAltriDisturbi> " + 
+//					 "    <gDomandaAltriDisturbi>1</gDomandaAltriDisturbi> " + 
+//					 "  </disturbiSonno> " + 
+//					 "   " + 
+//					 "  <euforiaEsaltazione>  " + 
+//					 "    <nonApplicabile>false </nonApplicabile> " + 
+//					 "    <motivazione></motivazione> " + 
+//					 "    <domandaPreliminare>true</domandaPreliminare> " + 
+//					 "    <fDomandaDifferenteDalSolito>1</fDomandaDifferenteDalSolito> " + 
+//					 "    <gDomandaDifferenteDalSolito>2</gDomandaDifferenteDalSolito> " + 
+//					 "    <fDomandaCoseRidicole>2</fDomandaCoseRidicole> " + 
+//					 "    <gDomandaCoseRidicole>1</gDomandaCoseRidicole> " + 
+//					 "    <fDomandaSensoUmorismo>3</fDomandaSensoUmorismo> " + 
+//					 "    <gDomandaSensoUmorismo>1</gDomandaSensoUmorismo> " + 
+//					 "    <fDomandaOsservazioni>2</fDomandaOsservazioni> " + 
+//					 "    <gDomandaOsservazioni>1</gDomandaOsservazioni> " + 
+//					 "    <fDomandaScherzi>2</fDomandaScherzi> " + 
+//					 "    <gDomandaScherzi>2</gDomandaScherzi> " + 
+//					 "    <fDomandaBravoRicco>1</fDomandaBravoRicco> " + 
+//					 "    <gDomandaBravoRicco>3</gDomandaBravoRicco> " + 
+//					 "    <fDomandaAltriSegni>1</fDomandaAltriSegni> " + 
+//					 "    <gDomandaAltriSegni>2</gDomandaAltriSegni> " + 
+//					 "  </euforiaEsaltazione> " + 
+//					 "   " + 
+//					 "  <irritabilitaLabilita>  " + 
+//					 "    <nonApplicabile>false </nonApplicabile> " + 
+//					 "    <motivazione></motivazione> " + 
+//					 "    <domandaPreliminare>true</domandaPreliminare> " + 
+//					 "    <fDomandaBruttoCarattere>1</fDomandaBruttoCarattere> " + 
+//					 "      <gDomandaBruttoCarattere>2</gDomandaBruttoCarattere> " + 
+//					 "      <fDomandaCambiamentiUmore>2</fDomandaCambiamentiUmore> " + 
+//					 "      <gDomandaCambiamentiUmore>1</gDomandaCambiamentiUmore> " + 
+//					 "      <fDomandaRabbia>3</fDomandaRabbia> " + 
+//					 "      <gDomandaRabbia>1</gDomandaRabbia> " + 
+//					 "      <fDomandaInsofferente>2</fDomandaInsofferente> " + 
+//					 "      <gDomandaInsofferente>1</gDomandaInsofferente> " + 
+//					 "      <fDomandaNervoso>2</fDomandaNervoso> " + 
+//					 "      <gDomandaNervoso>2</gDomandaNervoso> " + 
+//					 "      <fDomandaBorbotta>1</fDomandaBorbotta> " + 
+//					 "      <gDomandaBorbotta>3</gDomandaBorbotta> " + 
+//					 "      <fDomandaAltriSegni>1</fDomandaAltriSegni> " + 
+//					 "      <gDomandaAltriSegni>3</gDomandaAltriSegni> " + 
+//					 " " + 
+//					 "  </irritabilitaLabilita> " + 
+//					 "        " + 
+//					 " " + 
+//					 "</indice_npi> "))
+//			.andExpect(status().isOk());
+//		}
+ 	
+ 	
+//	 /**
+//	 * Test IndiceBarthelMobilitaXML.
+//	 *
+//	 * @throws Exception the exception
+//	 */
+//	@Test
+//	 public void testIndiceBarthelMobilitaXML() throws Exception{
+//		 
+//		this.mockMvc.perform(post("/indiceBarthelMobilitaXML").contentType(MediaType.APPLICATION_XML).content("<indice_barthel_mobilita> " + 
+//				 "  <mTrasferimentoLS>7</mTrasferimentoLS> " + 
+//				 "  <mDeambulazione>10</mDeambulazione> " + 
+//				 "  <mScale>10</mScale>  " + 
+//				 "</indice_barthel_mobilita> "))
+//		.andExpect(status().isOk());
+//	}
+	
+ 	
+ 	 /**
+ 		 * Test indiceSupportoReteSociale.
+ 		 *
+ 		 * @throws Exception the exception
+ 		 */
+ 		@Test
+ 		 public void testIndiceSupportoReteSocialeXML() throws Exception{
+ 			 
+ 			this.mockMvc.perform(post("/indiceSupportoReteSocialeXML").contentType(MediaType.APPLICATION_XML).content("<indiceSupportoReteSociale> " + 
+ 					 "		<preparazionePasti>5</preparazionePasti> " + 
+ 					 "		<puliziaCasa>10</puliziaCasa> " + 
+ 					 "		<lavanderia>5</lavanderia> " + 
+ 					 "		<effettuazioneAcquisti>0</effettuazioneAcquisti> " + 
+ 					 "		<alimentazione>0</alimentazione> " + 
+ 					 "		<bagno>0</bagno> " + 
+ 					 "		<toelettaPersonale>5</toelettaPersonale> " + 
+ 					 "		<abbigliamento>0</abbigliamento> " + 
+ 					 "		<usoWC>5</usoWC> " + 
+ 					 "		<assunzioneMedicinali>0</assunzioneMedicinali> " + 
+ 					 "		<trasferimenti>15</trasferimenti> " + 
+ 					 "		<deambulazione>5</deambulazione> " + 
+ 					 "		<sostegnoPsicoAffettivo>0</sostegnoPsicoAffettivo> " + 
+ 					 "		<gestioneDenaro>10</gestioneDenaro> " + 
+ 					 "		<supervisioneDiurna>5</supervisioneDiurna> " + 
+ 					 "		<supervisioneNotturna>0</supervisioneNotturna> " + 
+ 					 "	</indiceSupportoReteSociale>	 "))
+ 			.andExpect(status().isOk());
+ 		}
+ 		
+ 		
+}

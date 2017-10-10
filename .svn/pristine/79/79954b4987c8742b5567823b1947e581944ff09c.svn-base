@@ -1,0 +1,2293 @@
+package it.cle.webproject.ws;
+
+
+
+import it.cle.project.config.AppConfig;
+import it.cle.project.dto.PrestazioniRequestDTO;
+import it.cle.project.dto.ReportPrestazioniDTO;
+import it.cle.project.dto.ReportPrestazioniRequestDTO;
+import it.cle.project.dto.ReportPrestazioniResponseDTO;
+import it.cle.project.model.DatiAssistito;
+import it.cle.project.model.IndiceADL;
+import it.cle.project.model.IndiceBUT;
+import it.cle.project.model.IndiceBarthelMobilita;
+import it.cle.project.model.IndiceBesBulimia;
+import it.cle.project.model.IndiceEAT26;
+import it.cle.project.model.IndiceExtonSmith;
+import it.cle.project.model.IndiceNPI;
+import it.cle.project.model.IndiceSPMSQ;
+import it.cle.project.model.IndiceSupportoReteSociale;
+import it.cle.project.model.IndiceVIP;
+import it.cle.project.model.IndiceVPIA;
+import it.cle.project.model.IndiceVPOT;
+import it.cle.project.model.Pai;
+import it.cle.project.model.Pai_Prestazioni;
+import it.cle.project.model.Prestazioni;
+import it.cle.project.model.ProfiloAutonomia;
+import it.cle.project.model.Psan;
+import it.cle.project.model.RisultatiIndici;
+import it.cle.project.service.DatiAssistitoService;
+import it.cle.project.service.IndiceADLService;
+import it.cle.project.service.IndiceBUTService;
+import it.cle.project.service.IndiceBarthelMobilitaService;
+import it.cle.project.service.IndiceBesBulimiaService;
+import it.cle.project.service.IndiceEAT26Service;
+import it.cle.project.service.IndiceExtonSmithService;
+import it.cle.project.service.IndiceNPIService;
+import it.cle.project.service.IndiceSPMSQService;
+import it.cle.project.service.IndiceSupportoReteSocialeService;
+import it.cle.project.service.IndiceVIPService;
+import it.cle.project.service.IndiceVPIAService;
+import it.cle.project.service.IndiceVPOTService;
+import it.cle.project.service.InterventoService;
+import it.cle.project.service.PaiService;
+import it.cle.project.service.Pai_PrestazioniService;
+import it.cle.project.service.PrestazioniService;
+import it.cle.project.service.ProfiloAutonomiaService;
+import it.cle.project.service.PsanService;
+import it.cle.project.service.RisultatiIndiciService;
+import it.cle.webproject.dto.ResultDTO;
+import it.cle.webproject.dto.ResultDTOXML;
+import it.cle.webproject.utils.Utils;
+
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.Result;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.google.common.collect.Maps;
+
+
+/**
+ * @author ggermano
+ * Classe contenente i servizi esposti per Indice ADL, Indice Barthel Mobilita
+ * Indice Exton Smith, Indice SPMSQ
+ */
+@Controller
+public class WebServicesRepository {
+	@Autowired
+	private HttpServletRequest request;
+ 
+	
+	private ApplicationContext ctx = new AnnotationConfigApplicationContext(AppConfig.class);
+	private IndiceSupportoReteSocialeService indiceSupportoReteSocialeService = (IndiceSupportoReteSocialeService) ctx.getBean("indiceSupportoReteSocialeService");
+	private IndiceADLService indiceADLService = (IndiceADLService) ctx.getBean("indiceADLService");
+	private IndiceBarthelMobilitaService indiceBarthelMobilitaService = (IndiceBarthelMobilitaService) ctx.getBean("indiceBarthelMobilitaService");
+	private IndiceExtonSmithService indiceExtonSmithService = (IndiceExtonSmithService) ctx.getBean("indiceExtonSmithService");
+	private IndiceSPMSQService indiceSPMSQService = (IndiceSPMSQService) ctx.getBean("indiceSPMSQService");
+	private IndiceNPIService indiceNPIService = (IndiceNPIService) ctx.getBean("indiceNPIService");
+	private IndiceBUTService indiceBUTService = (IndiceBUTService) ctx.getBean("indiceBUTService");
+	private IndiceEAT26Service indiceEAT26Service = (IndiceEAT26Service) ctx.getBean("indiceEAT26Service");
+	private IndiceBesBulimiaService indiceBesBulimiaService = (IndiceBesBulimiaService) ctx.getBean("indiceBesBulimiaService");
+	private IndiceVIPService indiceVIPService = (IndiceVIPService) ctx.getBean("indiceVIPService"); 
+	private IndiceVPOTService indiceVPOTService= (IndiceVPOTService) ctx.getBean("indiceVPOTService");
+	private IndiceVPIAService indiceVPIAService= (IndiceVPIAService) ctx.getBean("indiceVPIAService");
+	private PsanService psanService= (PsanService) ctx.getBean("psanService");
+	private ProfiloAutonomiaService profiloAutonomiaService = (ProfiloAutonomiaService) ctx.getBean("profiloAutonomiaService");
+	private DatiAssistitoService datiAssistitoService= (DatiAssistitoService) ctx.getBean("datiAssistitoService");
+	private PrestazioniService prestazioniService= (PrestazioniService) ctx.getBean("prestazioniService");
+	private PaiService paiService= (PaiService) ctx.getBean("paiService");
+	private Pai_PrestazioniService pai_prestazioniService = (Pai_PrestazioniService) ctx.getBean("pai_prestazioniService");
+	private RisultatiIndiciService risultati_indiciService = (RisultatiIndiciService) ctx.getBean("risultati_indiciService");
+	private InterventoService intervento_service = (InterventoService) ctx.getBean("interventoService");
+	
+	@RequestMapping(value = "/indiceADLJSONSchema", method = RequestMethod.GET, headers="Accept=application/json" )//aggiunto , headers="Accept=application/xml"
+	@ResponseBody
+	public ResultDTO getIndiceADLJSONSchema() throws Exception {
+		ResultDTO result = new ResultDTO();
+		Map<String, Object> map = Maps.newHashMap();
+		map.put("JSONSchema", Utils.JSONSchemaMapper(IndiceADL.class));
+		result.setMap(map);
+		return result;
+		
+	}
+	
+	/*
+	@RequestMapping(value="/indiceADLXmlProva",headers="Accept=application/xml")
+	@ResponseBody
+	 public  IndiceADL getindiceADL() { 
+		IndiceADL ind = new IndiceADL();
+		ind.setfAbbigliamento(1);
+		ind.setfAlimentazione(2);
+		ind.setfBagnoDoccia(2);
+		ind.setfContinenzaIntestinale(2);
+		ind.setfContinenzaUrinaria(1);
+		ind.setfIgienePersonale(2);
+		ind.setfUsoGabinetto(1);
+		ind.setIdIndiceADL(1);
+		return ind;
+		
+		
+	 
+	 }*/  
+	
+	
+	@RequestMapping(value = "/indiceADL", method = RequestMethod.POST, headers="Accept=application/json")//aggiunto , headers="Accept=application/xml"
+	@ResponseBody
+	public ResultDTO getIndiceADL(@Valid @RequestBody IndiceADL indiceADL) throws Exception {
+		
+			ResultDTO result = new ResultDTO();
+			Map<String, Object> map = Maps.newHashMap();
+			
+			
+			Integer adl =indiceADLService.calcolaIndiceADL(indiceADL);
+			String codificaAdl= indiceADLService.codificaADL(adl);
+			map.put("OK","Calcolo Effettuato");
+			map.put("indiceADL", adl + " - " +codificaAdl);
+			result.setMap(map); 
+			
+			//salvo sul db la richiesta
+//			IndiceADL indADL = indiceADL;
+//			indADL.setValoreIndiceADL(indiceADLService.calcolaIndiceADL(indiceADL));
+//			indiceADLService.insert(indADL);
+			return result;
+			
+		
+	}
+	
+	 /*@ExceptionHandler
+	 @ResponseBody
+	 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+	 public ResultDTO handleException(MethodArgumentNotValidException exception) {
+		 ResultDTO reserr = new ResultDTO();
+		 Map<String,Object> maperr = Maps.newHashMap();
+		 maperr.put("OK","Errore nella richiesta");
+		 maperr.put(exception.getBindingResult().getFieldError().getField(), exception.getBindingResult().getFieldError().getDefaultMessage());
+		 reserr.setMap(maperr);
+	        return reserr;
+	    }*/
+	
+	/* @ExceptionHandler
+	    @ResponseBody
+	    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+	    public Error handleException(MethodArgumentNotValidException exception) {
+		 //System.out.println(exception.getBindingResult().getFieldError().getDefaultMessage());
+		 System.out.println(exception.getBindingResult().getFieldError().getField());
+	        return new Error();
+	    }*/
+	 
+	
+	 
+	/*@RequestMapping(value = "/indiceADLXML", method = RequestMethod.POST)//aggiunto , headers="Accept=application/xml"
+	public IndiceADLXMLDTO getIndiceADLXML(@Valid @RequestBody IndiceADL indiceADL) throws Exception {
+		IndiceADLXMLDTO result = new IndiceADLXMLDTO();
+		result.setIndiceADLValue(indiceADLService.calcolaIndiceADL(indiceADL)); 
+		System.out.println(result);
+		return result;
+	}*/
+	
+	@RequestMapping(value = "/indiceADLXML", method = RequestMethod.POST,headers="Accept=application/xml")//aggiunto , headers="Accept=application/xml"
+	@ResponseBody
+	public ResultDTOXML getIndiceADLXML(@Valid @RequestBody   IndiceADL indiceADL) throws Exception {
+		
+		
+		ResultDTOXML result = new ResultDTOXML();
+		Map<String, Object>map = Maps.newHashMap();
+		
+		Integer adl =indiceADLService.calcolaIndiceADL(indiceADL);
+		String codificaAdl= indiceADLService.codificaADL(adl);
+		map.put("OK","Calcolo Effettuato");
+		map.put("indiceADL", adl + " - " +codificaAdl);
+		result.setMap(map); 
+		
+		//salvo sul db la richiesta
+//		IndiceADL indADL = indiceADL;
+//		indADL.setValoreIndiceADL(indiceADLService.calcolaIndiceADL(indiceADL));
+//		indiceADLService.insert(indADL);
+		
+		return result;
+	}
+	
+	
+	@RequestMapping(value = "/indiceBarthelMobilitaJSONSchema", method = RequestMethod.GET, headers="Accept=application/json")
+	@ResponseBody
+	public ResultDTO getIndiceBarthelMobilitaJSONSchema() throws Exception {
+		ResultDTO result = new ResultDTO();
+		Map<String, Object> map = Maps.newHashMap();
+		map.put("JSONSchema", Utils.JSONSchemaMapper(IndiceBarthelMobilita.class));
+		result.setMap(map);
+		return result;
+	}
+	
+	
+	
+	@RequestMapping(value = "/indiceBarthelMobilita", method = RequestMethod.POST, headers="Accept=application/json")
+	@ResponseBody
+	public ResultDTO getIndiceBarthelMobilita(@Valid @RequestBody IndiceBarthelMobilita indiceBarthelMobilita,Errors errors) throws Exception {
+		if (errors.hasErrors()) {
+			ResultDTO reserr = new ResultDTO();
+			Map<String, Object> maperr = Maps.newHashMap();
+			maperr.put("OK", "Errore nella richiesta");
+			reserr.setMap(maperr);
+			return reserr;
+		}
+		ResultDTO result = new ResultDTO();
+		Map<String, Object> map = Maps.newHashMap();
+		//salvo la richiesta
+		
+		
+		Integer vmob = indiceBarthelMobilitaService.calcolaMobilita(indiceBarthelMobilita);
+		String codificaIndiceMobilita = indiceBarthelMobilitaService.codificaVMOB(vmob);
+		map.put("OK", "Calcolo effettuato");
+		map.put("indiceBarthelMobilita", vmob +" - "+codificaIndiceMobilita);
+		result.setMap(map);
+		
+		//salvo sul db la richiesta
+//		IndiceBarthelMobilita indBarthelMobilita = indiceBarthelMobilita;
+//		indBarthelMobilita.setValoreIndiceBarthelMobilita(vmob);
+//		indiceBarthelMobilitaService.insert(indiceBarthelMobilita);
+		
+		return result;
+	}
+	
+	@RequestMapping(value = "/indiceBarthelMobilitaXML", method = RequestMethod.POST,headers="Accept=application/xml")
+	@ResponseBody
+	public ResultDTOXML getIndiceBarthelMobilitaXML(@Valid @RequestBody IndiceBarthelMobilita indiceBarthelMobilita,Errors errors) throws Exception {
+		if (errors.hasErrors()) {
+			ResultDTOXML reserr = new ResultDTOXML();
+			Map<String, Object> maperr = Maps.newHashMap();
+			maperr.put("OK", "Errore nella richiesta");
+			reserr.setMap(maperr);
+			return reserr;
+		}
+				
+		ResultDTOXML result = new ResultDTOXML();
+		Map<String, Object> map = Maps.newHashMap();
+		Integer vmob = indiceBarthelMobilitaService.calcolaMobilita(indiceBarthelMobilita);
+		String codificaIndiceMobilita = indiceBarthelMobilitaService.codificaVMOB(vmob);
+		map.put("OK", "Calcolo effettuato");
+		map.put("indiceBarthelMobilita", vmob +" - "+codificaIndiceMobilita);
+		result.setMap(map);
+		
+		//salvo sul db la richiesta
+//		IndiceBarthelMobilita indBarthelMobilita = indiceBarthelMobilita;
+//		indBarthelMobilita.setValoreIndiceBarthelMobilita(vmob);
+//		indiceBarthelMobilitaService.insert(indiceBarthelMobilita);
+				
+		return result;
+	}
+	
+
+	
+	@RequestMapping(value = "/indiceExtonSmithJSONSchema", method = RequestMethod.GET, headers="Accept=application/json")
+	@ResponseBody
+	public ResultDTO getIndiceExtonSmithJSONSchema() throws Exception {
+		ResultDTO result = new ResultDTO();
+		Map<String, Object> map = Maps.newHashMap();
+		map.put("JSONSchema", Utils.JSONSchemaMapper(IndiceExtonSmith.class));
+		result.setMap(map);
+		return result;
+	}
+	
+    
+	
+	@RequestMapping(value = "/indiceExtonSmith", method = RequestMethod.POST, headers="Accept=application/json")
+	@ResponseBody
+	public ResultDTO getIndiceExtonSmith(@Valid @RequestBody IndiceExtonSmith indiceExtonSmith,Errors errors) throws Exception {
+		if (errors.hasErrors()) {
+			ResultDTO reserr = new ResultDTO();
+			Map<String, Object> maperr = Maps.newHashMap();
+			maperr.put("OK", "Errore nella richiesta");
+			//maperr.put("Codifica Exton Smith", null);
+			reserr.setMap(maperr);
+			return reserr;
+		}
+				
+		
+		ResultDTO result = new ResultDTO();
+		Map<String, Object> map = Maps.newHashMap();
+		Integer valoreIndiceExtonSmith = indiceExtonSmithService.calcolaPrevDecub(indiceExtonSmith);
+		map.put("OK", "Calcolo effettuato");
+		map.put("Codifica Exton Smith", valoreIndiceExtonSmith);
+		result.setMap(map);
+		
+		//salvo sul db la richiesta
+//		IndiceExtonSmith indExtonSmith = indiceExtonSmith;
+//		indExtonSmith.setValoreIndiceExtonSmith(valoreIndiceExtonSmith);
+//		indiceExtonSmithService.insert(indiceExtonSmith);
+				
+				
+		return result;
+	}
+	
+	@RequestMapping(value = "/indiceExtonSmithXML", method = RequestMethod.POST,headers="Accept=application/xml")
+	@ResponseBody
+	public ResultDTOXML getIndiceExtonSmithXML(@Valid @RequestBody IndiceExtonSmith indiceExtonSmith,Errors errors) throws Exception {
+		if (errors.hasErrors()) {
+			ResultDTOXML reserr = new ResultDTOXML();
+			Map<String, Object> maperr = Maps.newHashMap();
+			maperr.put("OK", "Errore nella richiesta");
+			//maperr.put("Codifica Exton Smith", null);
+			reserr.setMap(maperr);
+			return reserr;
+		}
+						
+				
+		ResultDTOXML result = new ResultDTOXML();
+		Map<String, Object> map = Maps.newHashMap();
+		Integer valoreIndiceExtonSmith = indiceExtonSmithService.calcolaPrevDecub(indiceExtonSmith);
+		map.put("OK", "Calcolo effettuato");
+		map.put("Codifica Exton Smith", valoreIndiceExtonSmith);
+		result.setMap(map);
+		
+		//salvo sul db la richiesta
+//		IndiceExtonSmith indExtonSmith = indiceExtonSmith;
+//		indExtonSmith.setValoreIndiceExtonSmith(valoreIndiceExtonSmith);
+//		indiceExtonSmithService.insert(indiceExtonSmith);
+		return result;
+	}
+	
+	
+	
+	@RequestMapping(value = "/indiceSPMSQJSONSchema", method = RequestMethod.GET, headers="Accept=application/json")
+	@ResponseBody
+	public ResultDTO getIndiceSPMSQJSONSchema() throws Exception {
+		ResultDTO result = new ResultDTO();
+		Map<String, Object> map = Maps.newHashMap();
+		map.put("JSONSchema", Utils.JSONSchemaMapper(IndiceSPMSQ.class));
+		result.setMap(map);
+		return result;
+	}
+	
+    
+	
+	@RequestMapping(value = "/indiceSPMSQ", method = RequestMethod.POST, headers="Accept=application/json")
+	@ResponseBody
+	public ResultDTO getIndiceSPMSQ(@Valid @RequestBody IndiceSPMSQ indiceSPMSQ,Errors errors) throws Exception {
+		if (errors.hasErrors()) {
+			ResultDTO reserr = new ResultDTO();
+			Map<String, Object> maperr = Maps.newHashMap();
+			maperr.put("OK", "Errore nella richiesta");
+			//maperr.put("Codifica SPMSQ", null);
+			reserr.setMap(maperr);
+			return reserr;
+		}
+		
+		
+		ResultDTO result = new ResultDTO();
+		Map<String, Object> map = Maps.newHashMap();
+		Integer valoreIndiceSPMSQ = indiceSPMSQService.calcolaSPMSQ(indiceSPMSQ);
+		map.put("OK", "Calcolo effettuato");
+		map.put("Codifica SPMSQ", valoreIndiceSPMSQ);
+		
+		//salvo sul db la richiesta
+//		IndiceSPMSQ indSPMSQ = indiceSPMSQ;
+//		indSPMSQ.setValoreIndiceSPMSQ(valoreIndiceSPMSQ);
+//		indiceSPMSQService.insert(indSPMSQ);
+		
+		result.setMap(map);
+		return result;
+	}
+	
+	
+	@RequestMapping(value = "/indiceSPMSQXML", method = RequestMethod.POST,headers="Accept=application/xml")
+	@ResponseBody
+	public ResultDTOXML getIndiceSPMSQXML(@Valid @RequestBody IndiceSPMSQ indiceSPMSQ,Errors errors) throws Exception {
+		if (errors.hasErrors()) {
+			ResultDTOXML reserr = new ResultDTOXML();
+			Map<String, Object> maperr = Maps.newHashMap();
+			maperr.put("OK", "Errore nella richiesta");
+			//maperr.put("Codifica SPMSQ", null);
+			reserr.setMap(maperr);
+			return reserr;
+		}
+		
+		ResultDTOXML result = new ResultDTOXML();
+		Map<String, Object> map = Maps.newHashMap();
+		Integer valoreIndiceSPMSQ = indiceSPMSQService.calcolaSPMSQ(indiceSPMSQ);
+		map.put("OK", "Calcolo effettuato");
+		map.put("Codifica SPMSQ", valoreIndiceSPMSQ);
+		result.setMap(map);
+		
+		//salvo sul db la richiesta
+//		IndiceSPMSQ indSPMSQ = indiceSPMSQ;
+//		indSPMSQ.setValoreIndiceSPMSQ(valoreIndiceSPMSQ);
+//		indiceSPMSQService.insert(indSPMSQ);
+				
+		return result;
+	}
+	
+	
+	@RequestMapping(value = "/indiceNPIJSONSchema", method = RequestMethod.GET, headers="Accept=application/json")
+	@ResponseBody
+	public ResultDTO getIndiceNPIJSONSchema() throws Exception {
+		ResultDTO result = new ResultDTO();
+		Map<String, Object> map = Maps.newHashMap();
+		map.put("JSONSchema", Utils.JSONSchemaMapper(IndiceNPI.class));
+		result.setMap(map);
+		return result;
+	}
+	
+    
+	
+	@RequestMapping(value = "/indiceNPI", method = RequestMethod.POST, headers="Accept=application/json")
+	@ResponseBody
+	public ResultDTO getIndiceNPI(@Valid @RequestBody IndiceNPI indiceNPI,Errors errors) throws Exception {
+		if (errors.hasErrors()) {
+			ResultDTO reserr = new ResultDTO();
+			Map<String, Object> maperr = Maps.newHashMap();
+			maperr.put("OK", "Errore nella richiesta");
+			//maperr.put("Codifica NPI", null);
+			reserr.setMap(maperr);
+			return reserr;
+		}
+		
+		ResultDTO result = new ResultDTO();
+		Map<String, Object> map = Maps.newHashMap();
+		
+		
+		Integer valoreIndiceNPI = indiceNPIService.calcolaIndiceNPI(indiceNPI);
+		map.put("OK", "Calcolo effettuato");
+		map.put("Codifica NPI", valoreIndiceNPI);
+		result.setMap(map);
+		
+		//salvo sul db la richiesta
+//		IndiceNPI indNPI = indiceNPI;
+//		indNPI.setValoreIndiceNPI(valoreIndiceNPI);
+//		indiceNPIService.insert(indNPI);
+				
+		return result;
+	}
+	
+	
+	@RequestMapping(value = "/indiceNPIXML", method = RequestMethod.POST,headers="Accept=application/xml")
+	@ResponseBody
+	public ResultDTOXML getIndiceNPIXML(@Valid @RequestBody IndiceNPI indiceNPI,Errors errors) throws Exception {
+		if (errors.hasErrors()) {
+			ResultDTOXML reserr = new ResultDTOXML();
+			Map<String, Object> maperr = Maps.newHashMap();
+			maperr.put("OK", "Errore nella richiesta");
+			//maperr.put("Codifica NPI", null);
+			reserr.setMap(maperr);
+			return reserr;
+		}
+		ResultDTOXML result = new ResultDTOXML();
+		Map<String, Object> map = Maps.newHashMap();
+		Integer valoreIndiceNPI = indiceNPIService.calcolaIndiceNPI(indiceNPI);
+		map.put("OK", "Calcolo effettuato");
+		map.put("Codifica NPI", valoreIndiceNPI);
+		result.setMap(map);
+		
+		//salvo sul db la richiesta
+//		IndiceNPI indNPI = indiceNPI;
+//		indNPI.setValoreIndiceNPI(valoreIndiceNPI);
+//		indiceNPIService.insert(indNPI);
+		
+		return result;
+	}
+	
+	
+	@RequestMapping(value = "/indiceSupportoReteSocialeJSONSchema", method = RequestMethod.GET)
+	@ResponseBody
+	public ResultDTO getIndiceSupportoReteSocialeJSONSchema() throws Exception {
+		ResultDTO result = new ResultDTO();
+		Map<String, Object> map = Maps.newHashMap();
+		map.put("JSONSchema", Utils.JSONSchemaMapper(IndiceSupportoReteSociale.class));
+		result.setMap(map);
+		return result;
+	}
+	
+    
+	
+	@RequestMapping(value = "/indiceSupportoReteSociale", method = RequestMethod.POST)
+	@ResponseBody
+	public ResultDTO getIndiceSupportoReteSociale(@Valid @RequestBody IndiceSupportoReteSociale indiceSupportoReteSociale,Errors errors) throws Exception {
+		if (errors.hasErrors()) {
+			ResultDTO reserr = new ResultDTO();
+			Map<String, Object> maperr = Maps.newHashMap();
+			maperr.put("OK", "Errore nella richiesta");
+			reserr.setMap(maperr);
+			return reserr;
+		}
+		ResultDTO result = new ResultDTO();
+		Map<String, Object> map = Maps.newHashMap();
+		
+		
+		Integer vsoc = indiceSupportoReteSocialeService.calcolaIndiceSupportoReteSociale(indiceSupportoReteSociale);
+		String codificaVsoc = indiceSupportoReteSocialeService.codificaPsoc(vsoc);
+		map.put("indiceSupportoReteSociale", vsoc+ " - "+codificaVsoc);
+		map.put("OK", "Calcolo effettuato");
+		
+		result.setMap(map);
+		
+		//salvo sul db la richiesta
+//		IndiceSupportoReteSociale indSupportoReteSociale = indiceSupportoReteSociale;
+//		indSupportoReteSociale.setValoreSupportoReteSociale(vsoc);
+//		indiceSupportoReteSocialeService.insert(indSupportoReteSociale);
+				
+				
+		return result;
+	}
+	
+	
+	@RequestMapping(value = "/indiceSupportoReteSocialeXML", method = RequestMethod.POST,headers="Accept=application/xml")
+	@ResponseBody
+	public ResultDTOXML getIndiceSupportoReteSocialeXML(@Valid @RequestBody IndiceSupportoReteSociale indiceSupportoReteSociale,Errors errors) throws Exception {
+		if (errors.hasErrors()) {
+			ResultDTOXML reserr = new ResultDTOXML();
+			Map<String, Object> maperr = Maps.newHashMap();
+			maperr.put("OK", "Errore nella richiesta");
+			reserr.setMap(maperr);
+			return reserr;
+		}
+		ResultDTOXML result = new ResultDTOXML();
+		Map<String, Object> map = Maps.newHashMap();
+				
+		Integer vsoc = indiceSupportoReteSocialeService.calcolaIndiceSupportoReteSociale(indiceSupportoReteSociale);
+		String codificaVsoc = indiceSupportoReteSocialeService.codificaPsoc(vsoc);
+		map.put("indiceSupportoReteSociale", vsoc+ " - "+codificaVsoc);
+		map.put("OK", "Calcolo effettuato");
+		
+		result.setMap(map);
+		
+		//salvo sul db la richiesta
+//		IndiceSupportoReteSociale indSupportoReteSociale = indiceSupportoReteSociale;
+//		indSupportoReteSociale.setValoreSupportoReteSociale(vsoc);
+//		indiceSupportoReteSocialeService.insert(indSupportoReteSociale);
+		return result;
+	}
+	
+	/*
+	@RequestMapping(value = "/getVsan", method = RequestMethod.GET)
+	public ResultDTO getVsan(@Valid Integer vip,Integer vpia,Integer extensionSmith) throws Exception {
+		ResultDTO result = new ResultDTO();
+		return result;
+	}*/
+	
+	/*
+	@RequestMapping(value = "/getUlterioriBisogni", method = RequestMethod.GET)
+	public ResultDTO getUlterioriBisogni() throws Exception {
+		ResultDTO result = new ResultDTO();
+		return result;
+	}*/
+	
+	/*
+	@RequestMapping(value = "/getProfiloAutonomia", method = RequestMethod.GET)
+	public ResultDTO getProfiloAutonomia(Integer pcog,Integer pmob,Integer padl,Integer psan,Integer psoc) throws Exception {
+		ResultDTO result = new ResultDTO();
+		return result;
+	}*/
+	
+	/*
+	@RequestMapping(value = "/getCodiceProfilo", method = RequestMethod.GET)
+	public ResultDTO getCodiceProfilo(Integer pcog,Integer pmob,Integer padl,Integer psan,Integer psoc) throws Exception {
+		ResultDTO result = new ResultDTO();
+		return result;
+	}*/
+	
+	/*
+	@RequestMapping(value = "/getProfiloComportamentale", method = RequestMethod.GET)
+	public ResultDTO getProfiloComportamentale(Integer pcog,Integer pmob,Integer padl,Integer psan,Integer psoc) throws Exception {
+		ResultDTO result = new ResultDTO();
+		return result;
+	}*/
+
+	/*
+	@RequestMapping(value = "/getPalts", method = RequestMethod.GET)
+	public ResultDTO getPalts() throws Exception {
+		ResultDTO result = new ResultDTO();
+		return result;
+	}*/
+	
+	/*
+	@RequestMapping(value = "/saveAssistenzaInfermieristica", method = RequestMethod.POST)
+	public ResultDTO saveAssistenzaInfermieristica(Object dto) throws Exception {
+		ResultDTO result = new ResultDTO();
+		return result;
+	}*/
+	
+	
+	@RequestMapping(value = "/indiceBesBulimiaJSONSchema", method = RequestMethod.GET)
+	@ResponseBody
+	public ResultDTO getIndiceBesBulimiaJSONSchema() throws Exception {
+		ResultDTO result = new ResultDTO();
+		Map<String, Object> map = Maps.newHashMap();
+		map.put("JSONSchema", Utils.JSONSchemaMapper(IndiceBesBulimia.class));
+		result.setMap(map);
+		return result;
+	}
+	
+	
+	
+	@RequestMapping(value = "/indiceBesBulimia", method = RequestMethod.POST)
+	@ResponseBody
+	public ResultDTO getIndiceBesBulimia(@Valid @RequestBody IndiceBesBulimia indiceBesBulimia,Errors errors) throws Exception {
+		if (errors.hasErrors()) {
+			ResultDTO reserr = new ResultDTO();
+			Map<String, Object> maperr = Maps.newHashMap();
+			maperr.put("OK", "Errore nella richiesta");
+			//maperr.put("Codifica BES", null);
+			reserr.setMap(maperr);
+			return reserr;
+		}
+		ResultDTO result = new ResultDTO();
+		Map<String, Object> map = Maps.newHashMap();
+		
+		
+		Integer punteggio = indiceBesBulimiaService.calcolaBulimia(indiceBesBulimia);
+		String codificaIndiceBesBulimia=indiceBesBulimiaService.codificaSituazione(punteggio);
+		map.put("OK", "Calcolo effettuato");
+		map.put("Codifica BES", codificaIndiceBesBulimia);
+		result.setMap(map);
+		
+		//salvo sul db la richiesta
+//		IndiceBesBulimia indBesBulimia = indiceBesBulimia;
+//		indBesBulimia.setValoreIndiceBesBulimia(punteggio);
+//		indiceBesBulimiaService.insert(indiceBesBulimia);
+				
+		return result;
+	}
+	
+	@RequestMapping(value = "/indiceBesBulimiaXML", method = RequestMethod.POST,headers="Accept=application/xml")
+	@ResponseBody
+	public ResultDTOXML getIndiceBesBulimiaXML(@Valid @RequestBody IndiceBesBulimia indiceBesBulimia,Errors errors) throws Exception {
+		if (errors.hasErrors()) {
+			ResultDTOXML reserr = new ResultDTOXML();
+			Map<String, Object> maperr = Maps.newHashMap();
+			maperr.put("OK", "Errore nella richiesta");
+			//maperr.put("Codifica BES", null);
+			reserr.setMap(maperr);
+			return reserr;
+		}
+		ResultDTOXML result = new ResultDTOXML();
+		Map<String, Object> map = Maps.newHashMap();
+		
+		
+		Integer punteggio = indiceBesBulimiaService.calcolaBulimia(indiceBesBulimia);
+		String codificaIndiceBesBulimia=indiceBesBulimiaService.codificaSituazione(punteggio);
+		map.put("OK", "Calcolo effettuato");
+		map.put("Codifica BES", codificaIndiceBesBulimia);
+		result.setMap(map);
+		
+		//salvo sul db la richiesta
+//		IndiceBesBulimia indBesBulimia = indiceBesBulimia;
+//		indBesBulimia.setValoreIndiceBesBulimia(punteggio);
+//		indiceBesBulimiaService.insert(indiceBesBulimia);
+		
+		
+		return result;
+	}
+	
+
+	
+	@RequestMapping(value = "/indiceBUTJSONSchema", method = RequestMethod.GET)
+	@ResponseBody
+	public ResultDTO getIndiceBUTJSONSchema() throws Exception {
+		ResultDTO result = new ResultDTO();
+		Map<String, Object> map = Maps.newHashMap();
+		map.put("JSONSchema", Utils.JSONSchemaMapper(IndiceBUT.class));
+		result.setMap(map);
+		return result;
+	}
+	
+	
+	@RequestMapping(value = "/indiceBUT", method = RequestMethod.POST)
+	@ResponseBody
+	public ResultDTO getIndiceBUT(@Valid @RequestBody IndiceBUT indiceBUT,Errors errors) throws Exception {
+		if (errors.hasErrors()) {
+			ResultDTO reserr = new ResultDTO();
+			Map<String, Object> maperr = Maps.newHashMap();
+			maperr.put("OK", "Errore nella richiesta");
+			
+			reserr.setMap(maperr);
+			return reserr;
+		}
+	
+		
+		ResultDTO result = new ResultDTO();
+		Map<String, Object> map = Maps.newHashMap();
+		Float valoreIndiceA = indiceBUTService.calcolaA(indiceBUT.getIndiceBUTa());
+		Float valoreIndiceBIC = indiceBUTService.calcolaBIC(indiceBUT.getIndiceBUTa());
+		Float valoreIndiceCSM = indiceBUTService.calcolaCSM(indiceBUT.getIndiceBUTa());
+		Float valoreIndiceD = indiceBUTService.calcolaD(indiceBUT.getIndiceBUTa());
+		Float valoreIndiceGSI = indiceBUTService.calcolaGSI(indiceBUT.getIndiceBUTa());
+		Float valoreIndiceWP = indiceBUTService.calcolaWP(indiceBUT.getIndiceBUTa());
+		Integer valoreIndicePST = indiceBUTService.calcolaPST(indiceBUT.getIndiceBUTb());
+		Float valoreIndicePSDI = indiceBUTService.calcolaPSDI(indiceBUT.getIndiceBUTb());
+		map.put("OK", "Calcolo effettuato");
+		map.put("indiceA", valoreIndiceA);
+		map.put("indiceBIC", valoreIndiceBIC);
+		map.put("indiceCSM", valoreIndiceCSM);
+		map.put("indiceD ", valoreIndiceD);
+		map.put("indicGSI", valoreIndiceGSI);
+		map.put("indiceWP", valoreIndiceWP);
+		map.put("indicePST", valoreIndicePST);
+		map.put("indicePSDI", valoreIndicePSDI);
+		result.setMap(map);
+		
+		//salvataggio BUT
+//		IndiceBUT indBUT= indiceBUT;
+//		indBUT.setIndicePSDI(valoreIndicePSDI);
+//		indBUT.setIndiceCSM(valoreIndiceCSM);
+//		indBUT.setIndiceWP(valoreIndiceWP);
+//		indBUT.setIndicePST(valoreIndicePST);
+//		indBUT.setIndiceBIC(valoreIndiceBIC);
+//		indBUT.setIndiceA(valoreIndiceA);
+//		indBUT.setIndiceD(valoreIndiceD);
+//		indBUT.setIndiceGSI(valoreIndiceGSI);
+//		
+//		indiceBUTService.insert(indBUT);
+		
+				
+		return result;
+	}
+	
+	@RequestMapping(value = "/indiceBUTXML", method = RequestMethod.POST,headers="Accept=application/xml")
+	@ResponseBody
+	public ResultDTOXML getIndiceBUTXML(@Valid @RequestBody IndiceBUT indiceBUT,Errors errors) throws Exception {
+		if (errors.hasErrors()) {
+			ResultDTOXML reserr = new ResultDTOXML();
+			Map<String, Object> maperr = Maps.newHashMap();
+			maperr.put("OK", "Errore nella richiesta");
+			reserr.setMap(maperr);
+			return reserr;
+		}
+		ResultDTOXML result = new ResultDTOXML();
+		Map<String, Object> map = Maps.newHashMap();
+		Float valoreIndiceA = indiceBUTService.calcolaA(indiceBUT.getIndiceBUTa());
+		Float valoreIndiceBIC = indiceBUTService.calcolaBIC(indiceBUT.getIndiceBUTa());
+		Float valoreIndiceCSM = indiceBUTService.calcolaCSM(indiceBUT.getIndiceBUTa());
+		Float valoreIndiceD = indiceBUTService.calcolaD(indiceBUT.getIndiceBUTa());
+		Float valoreIndiceGSI = indiceBUTService.calcolaGSI(indiceBUT.getIndiceBUTa());
+		Float valoreIndiceWP = indiceBUTService.calcolaWP(indiceBUT.getIndiceBUTa());
+		Integer valoreIndicePST = indiceBUTService.calcolaPST(indiceBUT.getIndiceBUTb());
+		Float valoreIndicePSDI = indiceBUTService.calcolaPSDI(indiceBUT.getIndiceBUTb());
+		map.put("OK", "Calcolo effettuato");
+		map.put("indiceA", valoreIndiceA);
+		map.put("indiceBIC", valoreIndiceBIC);
+		map.put("indiceCSM", valoreIndiceCSM);
+		map.put("indiceD ", valoreIndiceD);
+		map.put("indicGSI", valoreIndiceGSI);
+		map.put("indiceWP", valoreIndiceWP);
+		map.put("indicePST", valoreIndicePST);
+		map.put("indicePSDI", valoreIndicePSDI);
+		result.setMap(map);
+		
+		//salvataggio BUT
+//		IndiceBUT indBUT= indiceBUT;
+//		indBUT.setIndicePSDI(valoreIndicePSDI);
+//		indBUT.setIndiceCSM(valoreIndiceCSM);
+//		indBUT.setIndiceWP(valoreIndiceWP);
+//		indBUT.setIndicePST(valoreIndicePST);
+//		indBUT.setIndiceBIC(valoreIndiceBIC);
+//		indBUT.setIndiceA(valoreIndiceA);
+//		indBUT.setIndiceD(valoreIndiceD);
+//		indBUT.setIndiceGSI(valoreIndiceGSI);
+//		
+//		indiceBUTService.insert(indBUT);
+				
+		
+		
+		return result;
+	}
+	
+
+	
+	@RequestMapping(value = "/schema/indice_eat", method = RequestMethod.GET)
+	//@RequestMapping(value = "/indiceEATJSONSchema", method = RequestMethod.GET)
+	@ResponseBody
+	public ResultDTO getIndiceEAT26JSONSchema() throws Exception {
+		ResultDTO result = new ResultDTO();
+		Map<String, Object> map = Maps.newHashMap();
+		map.put("JSONSchema", Utils.JSONSchemaMapper(IndiceEAT26.class));
+		result.setMap(map);
+		return result;
+	}
+	
+	
+	@RequestMapping(value = "/indiceEAT26", method = RequestMethod.POST)
+	@ResponseBody
+	public ResultDTO getIndiceEAT26(@Valid @RequestBody IndiceEAT26 indiceEAT26,Errors errors) throws Exception {
+		if (errors.hasErrors()) {
+			ResultDTO reserr = new ResultDTO();
+			Map<String, Object> maperr = Maps.newHashMap();
+			maperr.put("OK", "Errore nella richiesta");
+			reserr.setMap(maperr);
+			return reserr;
+		}
+		ResultDTO result = new ResultDTO();
+		Map<String, Object> map = Maps.newHashMap();
+		
+		
+		String risultatoEat26 = indiceEAT26Service.calcolaIndiceEAT26(indiceEAT26);
+		
+		map.put("indiceEAT", risultatoEat26);
+		result.setMap(map);
+		
+		//salvo la richiesta
+//		indiceEAT26Service.insert(indiceEAT26);
+				
+		return result;
+	}
+	
+	@RequestMapping(value = "/indiceEAT26XML", method = RequestMethod.POST,headers="Accept=application/xml")
+	@ResponseBody
+	public ResultDTOXML getIndiceEAT26XML(@Valid @RequestBody IndiceEAT26 indiceEAT26,Errors errors) throws Exception {
+		if (errors.hasErrors()) {
+			ResultDTOXML reserr = new ResultDTOXML();
+			Map<String, Object> maperr = Maps.newHashMap();
+			maperr.put("OK", "Errore nella richiesta");
+			//maperr.put("indice EAT", null);
+			reserr.setMap(maperr);
+			return reserr;
+		}
+		ResultDTOXML result = new ResultDTOXML();
+		Map<String, Object> map = Maps.newHashMap();
+				
+		String risultatoEat26 = indiceEAT26Service.calcolaIndiceEAT26(indiceEAT26);
+		
+		map.put("indiceEAT", risultatoEat26);
+		result.setMap(map);
+		
+		//salvo la richiesta
+//		indiceEAT26Service.insert(indiceEAT26);
+				
+		return result;
+	}
+	
+
+	@RequestMapping(value = "/indiceVIPJSONSchema", method = RequestMethod.GET, headers="Accept=application/json")
+	@ResponseBody
+	public ResultDTO getIndiceVIPJSONSchema() throws Exception {
+		ResultDTO result = new ResultDTO();
+		Map<String, Object> map = Maps.newHashMap();
+		map.put("JSONSchema", Utils.JSONSchemaMapper(IndiceVIP.class));
+		result.setMap(map);
+		return result;
+	}
+	
+	
+	@RequestMapping(value = "/indiceVIP", method = RequestMethod.POST, headers="Accept=application/json")
+	@ResponseBody
+	public ResultDTO getIndiceVIP(@Valid @RequestBody IndiceVIP indiceVIP,Errors errors) throws Exception {
+		if (errors.hasErrors()) {
+			ResultDTO reserr = new ResultDTO();
+			Map<String, Object> maperr = Maps.newHashMap();
+			maperr.put("OK", "Errore nella richiesta");
+			//maperr.put("Codifica Mobilità", null);
+			reserr.setMap(maperr);
+			return reserr;
+		}
+		ResultDTO result = new ResultDTO();
+		Map<String, Object> map = Maps.newHashMap();
+				
+		Integer vip = indiceVIPService.calcolaIndiceVIP(indiceVIP);
+		map.put("OK", "Calcolo effettuato");
+		map.put("Codifica VIP", vip);
+		result.setMap(map);
+		
+		//salvo la richiesta
+//		indiceVIPService.insert(indiceVIP);
+		return result;
+		
+	}
+	
+	
+	
+	
+	@RequestMapping(value = "/indiceVIPXML", method = RequestMethod.POST,headers="Accept=application/xml")
+	@ResponseBody
+	public ResultDTOXML getIndiceVIPXML(@Valid @RequestBody IndiceVIP indiceVIP,Errors errors) throws Exception {
+		if (errors.hasErrors()) {
+			ResultDTOXML reserr = new ResultDTOXML();
+			Map<String, Object> maperr = Maps.newHashMap();
+			maperr.put("OK", "Errore nella richiesta");
+			reserr.setMap(maperr);
+			return reserr;
+		}
+		ResultDTOXML result = new ResultDTOXML();
+		Map<String, Object> map = Maps.newHashMap();
+		//salvo la richiesta
+//		indiceVIPService.insert(indiceVIP);
+				
+		Integer vip = indiceVIPService.calcolaIndiceVIP(indiceVIP);
+		map.put("OK", "Calcolo effettuato");
+		map.put("VIP", vip);
+		
+		result.setMap(map);
+		return result;
+	}
+	
+	/*
+	@RequestMapping(value ="/selectIndiceADL", method = RequestMethod.GET)
+	public ResultDTO selectIndiceADL(Integer idIndiceADL) throws Exception{
+		ResultDTO result = new ResultDTO();
+		IndiceADL indiceADL;
+		indiceADL = indiceADLService.selectById(idIndiceADL);
+		Map<String, Object> map = Maps.newHashMap();
+		map.put("fAbbigliamento", indiceADL.getfAbbigliamento());
+		map.put("fAlimentazione", indiceADL.getfAlimentazione());
+		map.put("fBagnoDoccia", indiceADL.getfBagnoDoccia());
+		map.put("fContinenzaIntestinale", indiceADL.getfContinenzaIntestinale());
+		map.put("fcontinenzaUrinaria", indiceADL.getfContinenzaUrinaria());
+		map.put("fIgienePersonale", indiceADL.getfIgienePersonale());
+		map.put("fUsoGabinetto",indiceADL.getfUsoGabinetto());
+		result.setMap(map);
+		return result;
+	}*/
+	
+	/*
+	@RequestMapping(value ="/selectIndiceADLXML2", method = RequestMethod.GET)
+	public IndiceADL selectIndiceADLXML(Integer idIndiceADL) throws Exception{
+		
+		IndiceADL indiceADL;
+		indiceADL = indiceADLService.selectById(idIndiceADL);
+		System.out.println(indiceADL);
+		return indiceADL;
+	}*/
+	
+	/*
+	@RequestMapping(value ="/selectIndiceADLXML", method = RequestMethod.GET)
+	public ResultDTOXML selectIndiceADL2(Integer idIndiceADL) throws Exception{
+		ResultDTOXML result = new ResultDTOXML();
+		IndiceADL indiceADL;
+		indiceADL = indiceADLService.selectById(idIndiceADL);
+		Map<String, Object> map = Maps.newHashMap();
+		/*map.put("fAbbigliamento", indiceADL.getfAbbigliamento());
+		map.put("fAlimentazione", indiceADL.getfAlimentazione());
+		map.put("fBagnoDoccia", indiceADL.getfBagnoDoccia());
+		map.put("fContinenzaIntestinale", indiceADL.getfContinenzaIntestinale());
+		map.put("fcontinenzaUrinaria", indiceADL.getfContinenzaUrinaria());
+		map.put("fIgienePersonale", indiceADL.getfIgienePersonale());
+		map.put("fUsoGabinetto",indiceADL.getfUsoGabinetto());*/
+		//map.put("indiceADL", indiceADL);
+		//result.setMap(map);
+		//System.out.println(result.toString());
+		//return result;
+	//}
+	
+	
+	/*
+	@RequestMapping(value ="/insertIndiceExtonSmith", method = RequestMethod.PUT)
+	public ResultDTO insertIndiceExtonSmith(@Valid @RequestBody IndiceExtonSmith indiceExtonSmith) throws Exception{
+		ResultDTO result = new ResultDTO();
+		indiceExtonSmithService.insert(indiceExtonSmith);
+		Map<String, Object> map = Maps.newHashMap();
+		map.put("OK", "inserimento effettuato");
+		result.setMap(map);
+		return result;
+	}*/
+	
+	/*
+	@RequestMapping(value ="/insertIndiceExtonSmithXML", method = RequestMethod.PUT)
+	public ResultDTOXML insertIndiceExtonSmithXML(@Valid @RequestBody IndiceExtonSmith indiceExtonSmith) throws Exception{
+		ResultDTOXML result = new ResultDTOXML();
+		indiceExtonSmithService.insert(indiceExtonSmith);
+		Map<String, Object> map = Maps.newHashMap();
+		map.put("OK", "inserimento effettuato");
+		result.setMap(map);
+		return result;
+	}*/
+	
+	/*
+	@RequestMapping(value ="/selectIndiceExtonSmith", method = RequestMethod.GET)
+	public ResultDTO selectIndiceExtonSmith(Integer idIndiceExtonSmith) throws Exception{
+		ResultDTO result = new ResultDTO();
+		IndiceExtonSmith indiceExtonSmith;
+		indiceExtonSmith = indiceExtonSmithService.selectById(idIndiceExtonSmith);
+		Map<String, Object> map = Maps.newHashMap();
+		//map.put("indiceExtonSmith", indiceExtonSmith);
+		map.put("pPresenzaPiaghe", indiceExtonSmith.getpPresenzaPiaghe());
+		map.put("pDecubitiCondGen", indiceExtonSmith.getpDecubitiCondGen());
+		map.put("pDecubitiStatoMen",indiceExtonSmith.getpDecubitiStatoMen());
+		map.put("pDecubitiAttivita", indiceExtonSmith.getpDecubitiAttivita());
+		map.put("pDecubitiMobilita", indiceExtonSmith.getpDecubitiMobilita());
+		map.put("pDecubitiIncontinenza", indiceExtonSmith.getpDecubitiIncontinenza());
+		//map.put("indiceExtonSmith", indiceExtonSmith.);
+		result.setMap(map);
+		return result;
+	}*/
+	
+	/*
+	@RequestMapping(value ="/insertIndiceNPI", method = RequestMethod.PUT)
+	public ResultDTO insertIndiceNPI(@Valid @RequestBody IndiceNPI indiceNPI) throws Exception{
+		ResultDTO result = new ResultDTO();
+		indiceNPIService.insert(indiceNPI);
+		Map<String, Object> map = Maps.newHashMap();
+		map.put("OK", "inserimento effettuato");
+		result.setMap(map);
+		return result;
+	}*/
+	
+	/*
+	@RequestMapping(value ="/selectIndiceNPI", method = RequestMethod.GET)
+	public ResultDTO selectIndiceNPI(Integer idIndiceNPI) throws Exception{
+		ResultDTO result = new ResultDTO();
+		IndiceNPI indiceNPI;
+		indiceNPI = indiceNPIService.selectById(idIndiceNPI);
+		Map<String, Object> map = Maps.newHashMap();
+		map.put("indiceNPI", indiceNPI);
+		/*
+		Map<String, Object> map1 = Maps.newHashMap();
+		map1.put("nonApplicabile", indiceNPI.getAgitazioneAggressivita().getNonApplicabile());
+		map1.put("motivazione", indiceNPI.getAgitazioneAggressivita().getMotivazione());
+		map1.put("domandaPreliminare", indiceNPI.getAgitazioneAggressivita().getDomandaPreliminare());
+		map1.put("fDomandaIrritabile", indiceNPI.getAgitazioneAggressivita().getfDomandaIrritabile());
+		map1.put("gDomandaIrritabile", indiceNPI.getAgitazioneAggressivita().getgDomandaIrritabile());
+		map1.put("fDomandaOstinato", indiceNPI.getAgitazioneAggressivita().getfDomandaOstinato());
+		map1.put("gDomandaOstinato", indiceNPI.getAgitazioneAggressivita().getgDomandaOstinato());
+		map1.put("fDomandaNonCollabora", indiceNPI.getAgitazioneAggressivita().getfDomandaNonCollabora());
+		map1.put("gDomandaNonCollabora", indiceNPI.getAgitazioneAggressivita().getgDomandaNonCollabora());
+		map1.put("fDomandaAltriComportamenti", indiceNPI.getAgitazioneAggressivita().getfDomandaAltriComportamenti());
+		map1.put("gDomandaAltriComportamenti", indiceNPI.getAgitazioneAggressivita().getgDomandaAltriComportamenti());
+		map1.put("fDomandaBestemmie", indiceNPI.getAgitazioneAggressivita().getfDomandaBestemmie());
+		map1.put("gDomandaBestemmie", indiceNPI.getAgitazioneAggressivita().getgDomandaBestemmie());
+		map1.put("fDomandaLanciaOggetti", indiceNPI.getAgitazioneAggressivita().getfDomandaLanciaOggetti());
+		map1.put("gDomandaLanciaOggetti", indiceNPI.getAgitazioneAggressivita().getgDomandaLanciaOggetti());
+		map1.put("fDomandaColpireAltri", indiceNPI.getAgitazioneAggressivita().getfDomandaColpireAltri());
+		map1.put("gDomandaColpireAltri", indiceNPI.getAgitazioneAggressivita().getgDomandaColpireAltri());
+		map1.put("fDomandaAltriComportamentiAggressivi", indiceNPI.getAgitazioneAggressivita().getfDomandaAltriComportamentiAggressivi());
+		map1.put("gDomandaAltriComportamentiAggressivi", indiceNPI.getAgitazioneAggressivita().getgDomandaAltriComportamentiAggressivi());
+		map.put("agitazioneAggressivita", map1 );
+		Map<String, Object> map2 = Maps.newHashMap();
+		map2.put("nonApplicabile", indiceNPI.getAllucinazioni().getNonApplicabile());
+		map2.put("motivazione", indiceNPI.getAllucinazioni().getMotivazione());
+		map2.put("domandaPreliminare", indiceNPI.getAllucinazioni().getDomandaPreliminare());
+		map2.put("fDomandaVoci", indiceNPI.getAllucinazioni().getfDomandaVoci());
+		map2.put("gDomandaVoci", indiceNPI.getAllucinazioni().getgDomandaVoci());
+		map2.put("fDomandaPersoneNonPresenti", indiceNPI.getAllucinazioni().getfDomandaPersoneNonPresenti());
+		map2.put("gDomandaPersoneNonPresenti", indiceNPI.getAllucinazioni().getgDomandaPersoneNonPresenti());
+		map2.put("fDomandaVisioneCose", indiceNPI.getAllucinazioni().getfDomandaVisioneCose());
+		map2.put("gDomandaVisioneCose", indiceNPI.getAllucinazioni().getgDomandaVisioneCose());
+		map2.put("fDomandaOdori", indiceNPI.getAllucinazioni().getfDomandaOdori());
+		map2.put("gDomandaOdori", indiceNPI.getAllucinazioni().getgDomandaOdori());
+		map2.put("fDomandaToccoPelle", indiceNPI.getAllucinazioni().getfDomandaToccoPelle());
+		map2.put("gDomandaToccoPelle", indiceNPI.getAllucinazioni().getgDomandaToccoPelle());
+		map2.put("fDomandaSapori", indiceNPI.getAllucinazioni().getfDomandaSapori());
+		map2.put("gDomandaSapori", indiceNPI.getAllucinazioni().getgDomandaSapori());
+		map2.put("fDomandaEsperienzeSensoriali", indiceNPI.getAllucinazioni().getfDomandaEsperienzeSensoriali());
+		map2.put("gDomandaEsperienzeSensoriali", indiceNPI.getAllucinazioni().getgDomandaEsperienzeSensoriali());
+		map.put("allucinazioni", map2);
+		Map<String, Object> map3 = Maps.newHashMap();
+		map3.put("nonApplicabile", indiceNPI.getAnsia().getNonApplicabile());
+		map3.put("motivazione", indiceNPI.getAnsia().getMotivazione());
+		map3.put("domandaPreliminare", indiceNPI.getAnsia().getDomandaPreliminare());
+		map3.put("fDomandaFuturo", indiceNPI.getAnsia().getfDomandaFuturo());
+		map3.put("gDomandaFuturo", indiceNPI.getAnsia().getgDomandaFuturo());
+		map3.put("fDomandaEccessivamenteTeso", indiceNPI.getAnsia().getfDomandaEccessivamenteTeso());
+		map3.put("gDomandaEccessivamenteTeso", indiceNPI.getAnsia().getgDomandaEccessivamenteTeso());
+		map3.put("fDomandaRespiroCorto", indiceNPI.getAnsia().getfDomandaRespiroCorto());
+		map3.put("gDomandaRespiroCorto", indiceNPI.getAnsia().getgDomandaRespiroCorto());
+		map3.put("fDomandaRane", indiceNPI.getAnsia().getfDomandaRane());
+		map3.put("gDomandaRane", indiceNPI.getAnsia().getgDomandaRane());
+		map3.put("fDomandaEvitaLuoghi", indiceNPI.getAnsia().getfDomandaEvitaLuoghi());
+		map3.put("gDomandaEvitaLuoghi", indiceNPI.getAnsia().getgDomandaEvitaLuoghi());
+		map3.put("fDomandaDiventaNervoso", indiceNPI.getAnsia().getfDomandaDiventaNervoso());
+		map3.put("gDomandaDiventaNervoso", indiceNPI.getAnsia().getgDomandaDiventaNervoso());
+		map3.put("fDomandaManifestaAnsia", indiceNPI.getAnsia().getfDomandaManifestaAnsia());
+		map3.put("gDomandaManifestaAnsia", indiceNPI.getAnsia().getgDomandaManifestaAnsia());
+		map.put("ansia", map3);
+		Map<String, Object> map4 = Maps.newHashMap();
+		map4.put("nonApplicabile", indiceNPI.getApatiaIndifferenza().getNonApplicabile());
+		map4.put("motivazione", indiceNPI.getApatiaIndifferenza().getMotivazione());
+		map4.put("domandaPreliminare", indiceNPI.getApatiaIndifferenza().getDomandaPreliminare());
+		map4.put("fDomandaMenoSpontaneo", indiceNPI.getApatiaIndifferenza().getfDomandaMenoSpontaneo());
+		map4.put("gDomandaMenoSpontaneo", indiceNPI.getApatiaIndifferenza().getgDomandaMenoSpontaneo());
+		map4.put("fDomandaMenoDisponibile", indiceNPI.getApatiaIndifferenza().getfDomandaMenoDisponibile());
+		map4.put("gDomandaMenoDisponibile", indiceNPI.getApatiaIndifferenza().getgDomandaMenoDisponibile());
+		map4.put("fDomandaMenoAffettuoso", indiceNPI.getApatiaIndifferenza().getfDomandaMenoAffettuoso());
+		map4.put("gDomandaMenoAffettuoso", indiceNPI.getApatiaIndifferenza().getgDomandaMenoAffettuoso());
+		map4.put("fDomandaContribuisceMeno", indiceNPI.getApatiaIndifferenza().getfDomandaContribuisceMeno());
+		map4.put("gDomandaContribuisceMeno", indiceNPI.getApatiaIndifferenza().getgDomandaContribuisceMeno());
+		map4.put("fDomandaMenoInteressato", indiceNPI.getApatiaIndifferenza().getfDomandaMenoInteressato());
+		map4.put("gDomandaMenoInteressato", indiceNPI.getApatiaIndifferenza().getgDomandaMenoInteressato());
+		map4.put("fDomandaMenoInteresseAmici", indiceNPI.getApatiaIndifferenza().getfDomandaMenoInteresseAmici());
+		map4.put("gDomandaMenoInteresseAmici", indiceNPI.getApatiaIndifferenza().getgDomandaMenoInteresseAmici());
+		map4.put("fDomandaMenoEntusiasta", indiceNPI.getApatiaIndifferenza().getfDomandaMenoEntusiasta());
+		map4.put("gDomandaMenoEntusiasta", indiceNPI.getApatiaIndifferenza().getgDomandaMenoEntusiasta());
+		map4.put("fDomandaAltriSegni", indiceNPI.getApatiaIndifferenza().getfDomandaAltriSegni());
+		map4.put("gDomandaAltriSegni", indiceNPI.getApatiaIndifferenza().getgDomandaAltriSegni());
+		map.put("apatiaIndifferenza", map4);
+		Map<String, Object> map5 = Maps.newHashMap();
+		map5.put("nonApplicabile", indiceNPI.getAttivitaMotoriaAberrante());
+		map5.put("motivazione", indiceNPI.getAttivitaMotoriaAberrante());
+		map5.put("domandaPreliminare", indiceNPI.getAttivitaMotoriaAberrante());
+		map5.put("fDomandaCammina", indiceNPI.getAttivitaMotoriaAberrante());
+		map5.put("gDomandaCammina", indiceNPI.getAttivitaMotoriaAberrante());
+		map5.put("fDomandaRovistaCassetti", indiceNPI.getAttivitaMotoriaAberrante());
+		map5.put("gDomandaRovistaCassetti", indiceNPI.getAttivitaMotoriaAberrante());
+		map5.put("fDomandaVestiti", indiceNPI.getAttivitaMotoriaAberrante());
+		map5.put("gDomandaVestiti", indiceNPI.getAttivitaMotoriaAberrante());
+		map5.put("fDomandaAzioniRipetute", indiceNPI.getAttivitaMotoriaAberrante());
+		map5.put("gDomandaAzioniRipetute", indiceNPI.getAttivitaMotoriaAberrante());
+		map5.put("fDomandaAzioniRipetuteContinuamente", indiceNPI.getAttivitaMotoriaAberrante());
+		map5.put("gDomandaAzioniRipetuteContinuamente", indiceNPI.getAttivitaMotoriaAberrante());
+		map.put("attivitaMotoriaAberrante", map5);
+		Map<String, Object> map6 = Maps.newHashMap();
+		map6.put("nonApplicabile",indiceNPI.getDeliri().getNonApplicabile());
+		map6.put("motivazione",indiceNPI.getDeliri().getMotivazione());
+		map6.put("domandaPreliminare",indiceNPI.getDeliri().getDomandaPreliminare());
+		map6.put("fDomandaPericolo",indiceNPI.getDeliri().getfDomandaPericolo());
+		map6.put("gDomandaPericolo",indiceNPI.getDeliri().getgDomandaPericolo());
+		map6.put("fDomandaDerubato",indiceNPI.getDeliri().getfDomandaDerubato());
+		map6.put("gDomandaDerubato",indiceNPI.getDeliri().getgDomandaDerubato());
+		map6.put("fDomandaTradimento",indiceNPI.getDeliri().getfDomandaTradimento());
+		map6.put("gDomandaTradimento",indiceNPI.getDeliri().getgDomandaTradimento());
+		map6.put("fDomandaOspitiIndesiderati",indiceNPI.getDeliri().getfDomandaOspitiIndesiderati());
+		map6.put("gDomandaOspitiIndesiderati",indiceNPI.getDeliri().getgDomandaOspitiIndesiderati());
+		map6.put("fDomandaPersoneSconosciute",indiceNPI.getDeliri().getfDomandaPersoneSconosciute());
+		map6.put("gDomandaPersoneSconosciute",indiceNPI.getDeliri().getgDomandaPersoneSconosciute());
+		map6.put("fDomandaAbitazione",indiceNPI.getDeliri().getfDomandaAbitazione());
+		map6.put("gDomandaAbitazione",indiceNPI.getDeliri().getgDomandaAbitazione());
+		map6.put("fDomandaAbbandono",indiceNPI.getDeliri().getfDomandaAbbandono());
+		map6.put("gDomandaAbbandono",indiceNPI.getDeliri().getgDomandaAbbandono());
+		map6.put("fDomandaPresenzeInCasa",indiceNPI.getDeliri().getfDomandaPresenzeInCasa());
+		map6.put("gDomandaPresenzeInCasa",indiceNPI.getDeliri().getgDomandaPresenzeInCasa());
+		map6.put("fDomandaAltreCose",indiceNPI.getDeliri().getfDomandaAltreCose());
+		map6.put("gDomandaAltreCose",indiceNPI.getDeliri().getgDomandaAltreCose());
+		map.put("deliri", map6);
+		Map<String, Object> map7 = Maps.newHashMap();
+		map7.put("nonApplicabile",indiceNPI.getDepressioneDisforia().getNonApplicabile());
+		map7.put("motivazione",indiceNPI.getDepressioneDisforia().getMotivazione());
+		map7.put("domandaPreliminare",indiceNPI.getDepressioneDisforia().getDomandaPreliminare());
+		map7.put("fDomandaMalinconia",indiceNPI.getDepressioneDisforia().getfDomandaMalinconia());
+		map7.put("gDomandaMalinconia",indiceNPI.getDepressioneDisforia().getgDomandaMalinconia());
+		map7.put("fDomandaTristezza",indiceNPI.getDepressioneDisforia().getfDomandaTristezza());
+		map7.put("gDomandaTristezza",indiceNPI.getDepressioneDisforia().getgDomandaTristezza());
+		map7.put("fDomandaFallito",indiceNPI.getDepressioneDisforia().getfDomandaFallito());
+		map7.put("gDomandaFallito",indiceNPI.getDepressioneDisforia().getgDomandaFallito());
+		map7.put("fDomandaPersonaCattiva",indiceNPI.getDepressioneDisforia().getfDomandaPersonaCattiva());
+		map7.put("gDomandaPersonaCattiva",indiceNPI.getDepressioneDisforia().getgDomandaPersonaCattiva());
+		map7.put("fDomandaScoraggiato",indiceNPI.getDepressioneDisforia().getfDomandaScoraggiato());
+		map7.put("gDomandaScoraggiato",indiceNPI.getDepressioneDisforia().getgDomandaScoraggiato());
+		map7.put("fDomandaPeso",indiceNPI.getDepressioneDisforia().getfDomandaPeso());
+		map7.put("gDomandaPeso",indiceNPI.getDepressioneDisforia().getgDomandaPeso());
+		map7.put("fDomandaSuicidio",indiceNPI.getDepressioneDisforia().getfDomandaSuicidio());
+		map7.put("gDomandaSuicidio",indiceNPI.getDepressioneDisforia().getgDomandaSuicidio());
+		map7.put("fDomandaAltriSegni",indiceNPI.getDepressioneDisforia().getfDomandaAltriSegni());
+		map7.put("gDomandaAltriSegni",indiceNPI.getDepressioneDisforia().getgDomandaAltriSegni());
+		map.put("depressioneDisforia", map7);
+		Map<String, Object> map8 = Maps.newHashMap();
+		map8.put("nonApplicabile",indiceNPI.getDisinibizione().getNonApplicabile());
+		map8.put("motivazione",indiceNPI.getDisinibizione().getMotivazione());
+		map8.put("domandaPreliminare",indiceNPI.getDisinibizione().getDomandaPreliminare());
+		map8.put("fDomandaImpulsivo",indiceNPI.getDisinibizione().getfDomandaImpulsivo());
+		map8.put("gDomandaImpulsivo",indiceNPI.getDisinibizione().getgDomandaImpulsivo());
+		map8.put("fDomandaEstranei",indiceNPI.getDisinibizione().getfDomandaEstranei());
+		map8.put("gDomandaEstranei",indiceNPI.getDisinibizione().getgDomandaEstranei());
+		map8.put("fDomandaOffensive",indiceNPI.getDisinibizione().getfDomandaOffensive());
+		map8.put("gDomandaOffensive",indiceNPI.getDisinibizione().getgDomandaOffensive());
+		map8.put("fDomandaCoseVolgari",indiceNPI.getDisinibizione().getfDomandaCoseVolgari());
+		map8.put("gDomandaCoseVolgari",indiceNPI.getDisinibizione().getgDomandaCoseVolgari());
+		map8.put("fDomandaCosePrivate",indiceNPI.getDisinibizione().getfDomandaCosePrivate());
+		map8.put("gDomandaCosePrivate",indiceNPI.getDisinibizione().getgDomandaCosePrivate());
+		map8.put("fDomandaLiberta",indiceNPI.getDisinibizione().getfDomandaLiberta());
+		map8.put("gDomandaLiberta",indiceNPI.getDisinibizione().getgDomandaLiberta());
+		map8.put("fDomandaAltriSegni",indiceNPI.getDisinibizione().getfDomandaAltriSegni());
+		map8.put("gDomandaAltriSegni",indiceNPI.getDisinibizione().getgDomandaAltriSegni());
+		
+		map.put("disinibizione", map8);
+		Map<String, Object> map9 = Maps.newHashMap();
+		map9.put("nonApplicabile",indiceNPI.getDisturbiAlimentazione().getNonApplicabile());
+		map9.put("motivazione",indiceNPI.getDisturbiAlimentazione().getMotivazione());
+		map9.put("domandaPreliminare",indiceNPI.getDisturbiAlimentazione().getDomandaPreliminare());
+		map9.put("fDomandaPerditaAppetito",indiceNPI.getDisturbiAlimentazione().getfDomandaPerditaAppetito());
+		map9.put("gDomandaPerditaAppetito",indiceNPI.getDisturbiAlimentazione().getgDomandaPerditaAppetito());
+		map9.put("fDomandaAumentoAppetito",indiceNPI.getDisturbiAlimentazione().getfDomandaAumentoAppetito());
+		map9.put("gDomandaAumentoAppetito",indiceNPI.getDisturbiAlimentazione().getgDomandaAumentoAppetito());
+		map9.put("fDomandaPerditaPeso",indiceNPI.getDisturbiAlimentazione().getfDomandaPerditaPeso());
+		map9.put("gDomandaPerditaPeso",indiceNPI.getDisturbiAlimentazione().getgDomandaPerditaPeso());
+		map9.put("fDomandaAumentoPeso",indiceNPI.getDisturbiAlimentazione().getfDomandaAumentoPeso());
+		map9.put("gDomandaAumentoPeso",indiceNPI.getDisturbiAlimentazione().getgDomandaAumentoPeso());
+		map9.put("fDomandaCambioAbitudiniAlimentari",indiceNPI.getDisturbiAlimentazione().getfDomandaCambioAbitudiniAlimentari());
+		map9.put("gDomandaCambioAbitudiniAlimentari",indiceNPI.getDisturbiAlimentazione().getgDomandaCambioAbitudiniAlimentari());
+		map9.put("fDomandaCambioGustiAlimentari",indiceNPI.getDisturbiAlimentazione().getfDomandaCambioGustiAlimentari());
+		map9.put("gDomandaCambioGustiAlimentari",indiceNPI.getDisturbiAlimentazione().getgDomandaCambioGustiAlimentari());
+		map9.put("fDomandaSpecificheAbitudini",indiceNPI.getDisturbiAlimentazione().getfDomandaSpecificheAbitudini());
+		map9.put("gDomandaSpecificheAbitudini",indiceNPI.getDisturbiAlimentazione().getgDomandaSpecificheAbitudini());
+		map9.put("fDomandaAltriDisturbi",indiceNPI.getDisturbiAlimentazione().getfDomandaAltriDisturbi());
+		map9.put("gDomandaAltriDisturbi",indiceNPI.getDisturbiAlimentazione().getgDomandaAltriDisturbi());
+		map.put("disturbiAlimentazione", map9);
+		Map<String, Object> map10 = Maps.newHashMap();
+		map10.put("nonApplicabile",indiceNPI.getDisturbiSonno().getNonApplicabile());
+		map10.put("motivazione",indiceNPI.getDisturbiSonno().getMotivazione());
+		map10.put("domandaPreliminare",indiceNPI.getDisturbiSonno().getDomandaPreliminare());
+		map10.put("fDomandaAddormentarsi",indiceNPI.getDisturbiSonno().getfDomandaAddormentarsi());
+		map10.put("gDomandaAddormentarsi",indiceNPI.getDisturbiSonno().getgDomandaAddormentarsi());
+		map10.put("fDomandaAlzaDuranteNotte",indiceNPI.getDisturbiSonno().getfDomandaAlzaDuranteNotte());
+		map10.put("gDomandaAlzaDuranteNotte",indiceNPI.getDisturbiSonno().getgDomandaAlzaDuranteNotte());
+		map10.put("fDomandaVaga",indiceNPI.getDisturbiSonno().getfDomandaVaga());
+		map10.put("gDomandaVaga",indiceNPI.getDisturbiSonno().getgDomandaVaga());
+		map10.put("fDomandaDisturba",indiceNPI.getDisturbiSonno().getfDomandaDisturba());
+		map10.put("gDomandaDisturba",indiceNPI.getDisturbiSonno().getgDomandaDisturba());
+		map10.put("fDomandaEsceDiCasa",indiceNPI.getDisturbiSonno().getfDomandaEsceDiCasa());
+		map10.put("gDomandaEsceDiCasa",indiceNPI.getDisturbiSonno().getgDomandaEsceDiCasa());
+		map10.put("fDomandaSiSvegliaPresto",indiceNPI.getDisturbiSonno().getfDomandaSiSvegliaPresto());
+		map10.put("gDomandaSiSvegliaPresto",indiceNPI.getDisturbiSonno().getgDomandaSiSvegliaPresto());
+		map10.put("fDomandaDormeEccessivamente",indiceNPI.getDisturbiSonno().getfDomandaDormeEccessivamente());
+		map10.put("gDomandaDormeEccessivamente",indiceNPI.getDisturbiSonno().getgDomandaDormeEccessivamente());
+		map10.put("fDomandaAltriDisturbi",indiceNPI.getDisturbiSonno().getfDomandaAltriDisturbi());
+		map10.put("gDomandaAltriDisturbi",indiceNPI.getDisturbiSonno().getgDomandaAltriDisturbi());
+		map10.put("",indiceNPI.getDisturbiSonno());
+		map.put("disturbiSonno", map10);
+		Map<String, Object> map11 = Maps.newHashMap();
+		map11.put("nonApplicabile",indiceNPI.getEuforiaEsaltazione().getNonApplicabile());
+		map11.put("motivazione",indiceNPI.getEuforiaEsaltazione().getMotivazione());
+		map11.put("domandaPreliminare",indiceNPI.getEuforiaEsaltazione().getDomandaPreliminare());
+		map11.put("fDomandaDifferenteDalSolito",indiceNPI.getEuforiaEsaltazione().getfDomandaDifferenteDalSolito());
+		map11.put("gDomandaDifferenteDalSolito",indiceNPI.getEuforiaEsaltazione().getgDomandaDifferenteDalSolito());
+		map11.put("fDomandaCoseRidicole",indiceNPI.getEuforiaEsaltazione().getgDomandaCoseRidicole());
+		map11.put("gDomandaCoseRidicole",indiceNPI.getEuforiaEsaltazione().getfDomandaCoseRidicole());
+		map11.put("fDomandaSensoUmorismo",indiceNPI.getEuforiaEsaltazione().getfDomandaSensoUmorismo());
+		map11.put("gDomandaSensoUmorismo",indiceNPI.getEuforiaEsaltazione().getgDomandaSensoUmorismo());
+		map11.put("fDomandaOsservazioni",indiceNPI.getEuforiaEsaltazione().getfDomandaOsservazioni());
+		map11.put("gDomandaOsservazioni",indiceNPI.getEuforiaEsaltazione().getgDomandaOsservazioni());
+		map11.put("fDomandaScherzi",indiceNPI.getEuforiaEsaltazione().getfDomandaScherzi());
+		map11.put("gDomandaScherzi",indiceNPI.getEuforiaEsaltazione().getgDomandaScherzi());
+		map11.put("fDomandaBravoRicco",indiceNPI.getEuforiaEsaltazione().getfDomandaBravoRicco());
+		map11.put("gDomandaBravoRicco",indiceNPI.getEuforiaEsaltazione().getgDomandaBravoRicco());
+		map11.put("fDomandaAltriSegni",indiceNPI.getEuforiaEsaltazione().getfDomandaAltriSegni());
+		map11.put("gDomandaAltriSegni",indiceNPI.getEuforiaEsaltazione().getgDomandaAltriSegni());
+		map.put("euforiaEsaltazione", map11);
+		Map<String, Object> map12 = Maps.newHashMap();
+		map12.put("nonApplicabile",indiceNPI.getIrritabilitaLabilita().getNonApplicabile());
+		map12.put("motivazione",indiceNPI.getIrritabilitaLabilita().getMotivazione());
+		map12.put("domandaPreliminare",indiceNPI.getIrritabilitaLabilita().getDomandaPreliminare());
+		map12.put("fDomandaBruttoCarattere",indiceNPI.getIrritabilitaLabilita().getfDomandaBruttoCarattere());
+		map12.put("gDomandaBruttoCarattere",indiceNPI.getIrritabilitaLabilita().getgDomandaBruttoCarattere());
+		map12.put("fDomandaCambiamentiUmore",indiceNPI.getIrritabilitaLabilita().getfDomandaCambiamentiUmore());
+		map12.put("gDomandaCambiamentiUmore",indiceNPI.getIrritabilitaLabilita().getgDomandaCambiamentiUmore());
+		map12.put("fDomandaRabbia",indiceNPI.getIrritabilitaLabilita().getfDomandaRabbia());
+		map12.put("gDomandaRabbia",indiceNPI.getIrritabilitaLabilita().getgDomandaRabbia());
+		map12.put("fDomandaInsofferente",indiceNPI.getIrritabilitaLabilita().getfDomandaInsofferente());
+		map12.put("gDomandaInsofferente",indiceNPI.getIrritabilitaLabilita().getgDomandaInsofferente());
+		map12.put("fDomandaNervoso",indiceNPI.getIrritabilitaLabilita().getfDomandaNervoso());
+		map12.put("gDomandaNervoso",indiceNPI.getIrritabilitaLabilita().getgDomandaNervoso());
+		map12.put("fDomandaBorbotta",indiceNPI.getIrritabilitaLabilita().getfDomandaBorbotta());
+		map12.put("gDomandaBorbotta",indiceNPI.getIrritabilitaLabilita().getgDomandaBorbotta());
+		map12.put("fDomandaAltriSegni",indiceNPI.getIrritabilitaLabilita().getfDomandaAltriSegni());
+		map12.put("gDomandaAltriSegni",indiceNPI.getIrritabilitaLabilita().getgDomandaAltriSegni());
+		map.put("irritabilitaLabilita", map12);*/
+		//ObjectMapper mapper = new ObjectMapper(); 
+		//@SuppressWarnings("deprecation")
+		//JsonParser jParser =  new ObjectMapper().getJsonFactory().createJsonParser(mapper.writeValueAsString(map));
+		
+		//result.setMap(map);
+		//return result;
+	//}
+	
+	/*
+	@RequestMapping(value ="/selectIndiceNPIXML", method = RequestMethod.GET)
+	public ResultDTOXML selectIndiceNPIXML(Integer idIndiceNPI) throws Exception{
+		ResultDTOXML result = new ResultDTOXML();
+		IndiceNPI indiceNPI;
+		indiceNPI = indiceNPIService.selectById(idIndiceNPI);
+		Map<String, Object> map = Maps.newHashMap();
+		map.put("indiceNPI", indiceNPI);
+		
+		
+		result.setMap(map);
+		return result;
+	}*/
+	
+	
+	/*
+	@RequestMapping(value ="/insertIndiceSPMSQ", method = RequestMethod.PUT)
+	public ResultDTO insertIndiceSPMSQ(@Valid @RequestBody IndiceSPMSQ indiceSPMSQ) throws Exception{
+		ResultDTO result = new ResultDTO();
+		indiceSPMSQService.insert(indiceSPMSQ);
+		Map<String, Object> map = Maps.newHashMap();
+		map.put("OK", "inserimento effettuato");
+		result.setMap(map);
+		return result;
+	}*/
+	
+	/*
+	@RequestMapping(value ="/insertIndiceADL", method = RequestMethod.PUT)
+	public ResultDTO insertIndiceADL(@Valid @RequestBody IndiceADL indiceADL) throws Exception{
+		ResultDTO result = new ResultDTO();
+		indiceADLService.insert(indiceADL);
+		Map<String, Object> map = Maps.newHashMap();
+		map.put("OK", "inserimento effettuato");
+		result.setMap(map);
+		return result;
+	}*/
+	
+	/*
+	@RequestMapping(value ="/selectIndiceSPMSQ", method = RequestMethod.GET)
+	public ResultDTO selectIndiceSPMSQ(Integer idIndiceSPMSQ) throws Exception{
+		ResultDTO result = new ResultDTO();
+		IndiceSPMSQ indiceSPMSQ;
+		indiceSPMSQ = indiceSPMSQService.selectById(idIndiceSPMSQ);
+		Map<String, Object> map = Maps.newHashMap();
+		//map.put("indiceSPMSQ", indiceSPMSQ);
+		map.put("domandaGiornoOdierno", indiceSPMSQ.getDomandaGiornoOdierno());
+		map.put("domandaGiornoSettimanale", indiceSPMSQ.getDomandaGiornoSettimanale());
+		map.put("domandaNomePosto", indiceSPMSQ.getDomandaNomePosto());
+		map.put("domandaIndirizzo", indiceSPMSQ.getDomandaIndirizzo());
+		map.put("domandaAnni", indiceSPMSQ.getDomandaAnni());
+		map.put("domandaDataNascita", indiceSPMSQ.getDomandaDataNascita());
+		map.put("domandaPresRepPapa", indiceSPMSQ.getDomandaPresRepPapa());
+		map.put("domandaPrecedentePresRepPapa", indiceSPMSQ.getDomandaPrecedentePresRepPapa());
+		map.put("domandaNomeMadre", indiceSPMSQ.getDomandaNomeMadre());
+		map.put("domandaSottrazione", indiceSPMSQ.getDomandaSottrazione());
+		map.put("nonSomministrabile", indiceSPMSQ.getNonSomministrabile());
+		result.setMap(map);
+		return result;
+	}*/
+	
+	/*
+	@RequestMapping(value ="/insertIndiceSupportoReteSociale", method = RequestMethod.PUT)
+	public ResultDTO insertIndiceSupportoReteSociale(@Valid @RequestBody IndiceSupportoReteSociale indiceSupportoReteSociale) throws Exception{
+		ResultDTO result = new ResultDTO();
+		indiceSupportoReteSocialeService.insert(indiceSupportoReteSociale);
+		Map<String, Object> map = Maps.newHashMap();
+		map.put("OK", "inserimento effettuato");
+		result.setMap(map);
+		return result;
+	}*/
+	
+	/*
+	@RequestMapping(value ="/selectIndiceSupportoReteSociale", method = RequestMethod.GET)
+	public ResultDTO selectIndiceSupportoReteSociale(Integer idIndiceSupportoReteSociale) throws Exception{
+		ResultDTO result = new ResultDTO();
+		IndiceSupportoReteSociale indiceSupportoReteSociale;
+		indiceSupportoReteSociale = indiceSupportoReteSocialeService.selectById(idIndiceSupportoReteSociale);
+		Map<String, Object> map = Maps.newHashMap();
+		//map.put("indiceSupportoReteSociale", indiceSupportoReteSociale);
+		map.put("preparazionePasti", indiceSupportoReteSociale.getPreparazionePasti());
+		map.put("puliziaCasa", indiceSupportoReteSociale.getPuliziaCasa());
+		map.put("lavanderia", indiceSupportoReteSociale.getLavanderia());
+		map.put("effettuazioneAcquisti", indiceSupportoReteSociale.getEffettuazioneAcquisti());
+		map.put("alimentazione", indiceSupportoReteSociale.getAlimentazione());
+		map.put("bagno", indiceSupportoReteSociale.getBagno());
+		map.put("toelettaPersonale", indiceSupportoReteSociale.getToelettaPersonale());
+		map.put("abbigliamento", indiceSupportoReteSociale.getAbbigliamento());
+		map.put("usoWC", indiceSupportoReteSociale.getUsoWC());
+		map.put("assunzioneMedicinali", indiceSupportoReteSociale.getAssunzioneMedicinali());
+		map.put("trasferimenti", indiceSupportoReteSociale.getTrasferimenti());
+		map.put("deambulazione", indiceSupportoReteSociale.getDeambulazione());
+		map.put("sostegnoPsicoAffettivo", indiceSupportoReteSociale.getSostegnoPsicoAffettivo());
+		map.put("gestioneDenaro", indiceSupportoReteSociale.getGestioneDenaro());
+		result.setMap(map);
+		return result;
+	}*/
+	
+		
+	
+	@RequestMapping(value = "/indiceVPOTJSONSchema", method = RequestMethod.GET, headers="Accept=application/json")
+	@ResponseBody
+	public ResultDTO getindiceVPOTJSONSchema() throws Exception {
+		ResultDTO result = new ResultDTO();
+		Map<String, Object> map = Maps.newHashMap();
+		map.put("JSONSchema", Utils.JSONSchemaMapper(IndiceVPOT.class));
+		result.setMap(map);
+		return result;
+	}
+
+	
+	
+	
+	
+	@RequestMapping(value = "/indiceVPOT", method = RequestMethod.POST, headers="Accept=application/json")
+	@ResponseBody
+	public ResultDTO getIndiceVPOT(@Valid @RequestBody IndiceVPOT indiceVPOT,Errors errors) throws Exception {
+		if (errors.hasErrors()) {
+			ResultDTO reserr = new ResultDTO();
+			Map<String, Object> maperr = Maps.newHashMap();
+			maperr.put("OK", "Errore nella richiesta");
+			//maperr.put("Codifica Mobilità", null);
+			reserr.setMap(maperr);
+			return reserr;
+		}
+		ResultDTO result = new ResultDTO();
+		Map<String, Object> map = Maps.newHashMap();
+		
+				
+		Integer vpot = indiceVPOTService.calcolaVPOT(indiceVPOT);
+		String codificaIndiceVPOT = indiceVPOTService.codificaVPOT(vpot);
+		map.put("OK", "Calcolo effettuato");
+		map.put("Codifica VPOT", vpot);
+		map.put("Codifica VPOT", codificaIndiceVPOT);
+		result.setMap(map);
+		
+		//salvo la richiesta
+//		IndiceVPOT indVPOT= indiceVPOT;
+//		indVPOT.setValoreIndiceVPOT(vpot);
+//		indiceVPOTService.insert(indVPOT);
+				
+		return result;
+		
+	}
+	
+	
+	@RequestMapping(value = "/indiceVPOTXML", method = RequestMethod.POST,headers="Accept=application/xml")
+	@ResponseBody
+	public ResultDTOXML getIndiceVPOTXML(@Valid @RequestBody IndiceVPOT indiceVPOT,Errors errors) throws Exception {
+		if (errors.hasErrors()) {
+			ResultDTOXML reserr = new ResultDTOXML();
+			Map<String, Object> maperr = Maps.newHashMap();
+			maperr.put("OK", "Errore nella richiesta");
+			//maperr.put("Codifica Mobilità", null);
+			reserr.setMap(maperr);
+			return reserr;
+		}
+		ResultDTOXML result = new ResultDTOXML();
+		Map<String, Object> map = Maps.newHashMap();
+				
+		Integer vpot = indiceVPOTService.calcolaVPOT(indiceVPOT);
+//		String codificaIndiceVPOT = indiceVPOTService.codificaVPOT(vpot);
+		map.put("OK", "Calcolo effettuato");
+		map.put("Codifica VPOT", vpot);
+		
+		result.setMap(map);
+		
+		//salvo la richiesta
+//		IndiceVPOT indVPOT= indiceVPOT;
+//		indVPOT.setValoreIndiceVPOT(vpot);
+//		indiceVPOTService.insert(indVPOT);
+		
+		return result;
+	}
+	
+	
+	
+	
+	
+	
+	
+	@RequestMapping(value = "/indiceVPIAJSONSchema", method = RequestMethod.GET, headers="Accept=application/json")
+	@ResponseBody
+	public ResultDTO getindiceVPIAJSONSchema() throws Exception {
+		ResultDTO result = new ResultDTO();
+		Map<String, Object> map = Maps.newHashMap();
+		map.put("JSONSchema", Utils.JSONSchemaMapper(IndiceVPIA.class));
+		result.setMap(map);
+		return result;
+	}
+
+	
+	
+	
+	
+	@RequestMapping(value = "/indiceVPIA", method = RequestMethod.POST, headers="Accept=application/json")
+	@ResponseBody
+	public ResultDTO getIndiceVPIA(@Valid @RequestBody IndiceVPIA indiceVPIA,Errors errors) throws Exception {
+		if (errors.hasErrors()) {
+			ResultDTO reserr = new ResultDTO();
+			Map<String, Object> maperr = Maps.newHashMap();
+			maperr.put("OK", "Errore nella richiesta");
+			//maperr.put("Codifica Mobilità", null);
+			reserr.setMap(maperr);
+			return reserr;
+		}
+		ResultDTO result = new ResultDTO();
+		Map<String, Object> map = Maps.newHashMap();
+		
+		
+		Integer vpia = indiceVPIAService.calcolaVPIA(indiceVPIA);
+		map.put("OK", "Calcolo effettuato");
+		map.put("Codifica VPIA", vpia);
+		result.setMap(map);
+		
+		//salvo la richiesta
+//		IndiceVPIA indVPIA= indiceVPIA;
+//		indVPIA.setValoreIndiceVPIA(vpia);
+//		indiceVPIAService.insert(indVPIA);
+				
+		return result;
+	}
+	
+	
+	@RequestMapping(value = "/indiceVPIAXML", method = RequestMethod.POST,headers="Accept=application/xml")
+	@ResponseBody
+	public ResultDTOXML getIndiceVPIAXML(@Valid @RequestBody IndiceVPIA indiceVPIA,Errors errors) throws Exception {
+		if (errors.hasErrors()) {
+			ResultDTOXML reserr = new ResultDTOXML();
+			Map<String, Object> maperr = Maps.newHashMap();
+			maperr.put("OK", "Errore nella richiesta");
+			//maperr.put("Codifica Mobilità", null);
+			reserr.setMap(maperr);
+			return reserr;
+		}
+		ResultDTOXML result = new ResultDTOXML();
+		Map<String, Object> map = Maps.newHashMap();
+	
+		
+		Integer vpia = indiceVPIAService.calcolaVPIA(indiceVPIA);
+		//String codificaIndiceVPIA = indiceVPIAService.codificaVPIA(vpia);
+		map.put("OK", "Calcolo effettuato");
+		map.put("Codifica VPIA", vpia);
+		result.setMap(map);
+		
+		//salvo la richiesta
+//		IndiceVPIA indVPIA= indiceVPIA;
+//		indVPIA.setValoreIndiceVPIA(vpia);
+//		indiceVPIAService.insert(indVPIA);
+				
+				
+		return result;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	@RequestMapping(value = "/indicePSANJSONSchema", method = RequestMethod.GET, headers="Accept=application/json")
+	@ResponseBody
+	public ResultDTO getindicePSANJSONSchema() throws Exception {
+		ResultDTO result = new ResultDTO();
+		Map<String, Object> map = Maps.newHashMap();
+		map.put("JSONSchema", Utils.JSONSchemaMapper(Psan.class));
+		result.setMap(map);
+		return result;
+	}
+
+	
+	
+	
+	
+	@RequestMapping(value = "/indicePSAN", method = RequestMethod.POST, headers="Accept=application/json")
+	@ResponseBody
+	public ResultDTO getIndicePSAN(@Valid @RequestBody Psan psan,Errors errors) throws Exception {
+		if (errors.hasErrors()) {
+			ResultDTO reserr = new ResultDTO();
+			Map<String, Object> maperr = Maps.newHashMap();
+			maperr.put("OK", "Errore nella richiesta");
+			//maperr.put("Codifica Mobilità", null);
+			reserr.setMap(maperr);
+			return reserr;
+		}
+		ResultDTO result = new ResultDTO();
+		Map<String, Object> map = Maps.newHashMap();
+		
+		
+		Integer vsan = psanService.calcolaPsan(psan);
+		String codificaVsan = psanService.codificaPsan(vsan);
+		map.put("OK", "Calcolo effettuato");
+		map.put("valore VSAN ", vsan);
+		map.put("Codifica VPIA", codificaVsan);
+		result.setMap(map);
+		
+		
+		//salvo la richiesta
+//		Psan psan2= psan;
+//		psan2.setValorePSAN(vsan);
+//		psanService.insert(psan2);
+				
+		return result;
+	}
+	
+	
+	@RequestMapping(value = "/indicePSANXML", method = RequestMethod.POST,headers="Accept=application/xml")
+	@ResponseBody
+	public ResultDTOXML getIndicePSANXML(@Valid @RequestBody Psan psan,Errors errors) throws Exception {
+		if (errors.hasErrors()) {
+			ResultDTOXML reserr = new ResultDTOXML();
+			Map<String, Object> maperr = Maps.newHashMap();
+			maperr.put("OK", "Errore nella richiesta");
+			//maperr.put("Codifica Mobilità", null);
+			reserr.setMap(maperr);
+			return reserr;
+		}
+		ResultDTOXML result = new ResultDTOXML();
+		Map<String, Object> map = Maps.newHashMap();
+				
+		Integer vsan = psanService.calcolaPsan(psan);
+		String codificaVsan = psanService.codificaPsan(vsan);
+		map.put("Codifica VSAN", codificaVsan);
+		map.put("OK", "Calcolo effettuato");
+		map.put("valore VSAN ", vsan);
+		
+		result.setMap(map);
+		
+		//salvo la richiesta
+//		Psan psan2= psan;
+//		psan2.setValorePSAN(vsan);
+//		psanService.insert(psan2);
+		return result;
+	}
+	
+	
+	
+	@RequestMapping(value = "/profiloAutonomiaJSONSchema", method = RequestMethod.GET, headers="Accept=application/json")
+	@ResponseBody
+	public ResultDTO getProfiloAutonomiaJSONSchema() throws Exception {
+		ResultDTO result = new ResultDTO();
+		Map<String, Object> map = Maps.newHashMap();
+		map.put("JSONSchema", Utils.JSONSchemaMapper(Psan.class));
+		result.setMap(map);
+		return result;
+	}
+
+	
+	
+	
+	
+	@RequestMapping(value = "/profiloAutonomia", method = RequestMethod.POST, headers="Accept=application/json")
+	@ResponseBody
+	public ResultDTO getProfiloAutonomia(@Valid @RequestBody ProfiloAutonomia profiloAutonomia,Errors errors) throws Exception {
+		if (errors.hasErrors()) {
+			ResultDTO reserr = new ResultDTO();
+			Map<String, Object> maperr = Maps.newHashMap();
+			maperr.put("OK", "Errore nella richiesta");
+			//maperr.put("Codifica Mobilità", null);
+			reserr.setMap(maperr);
+			return reserr;
+		}
+		ResultDTO result = new ResultDTO();
+		Map<String, Object> map = Maps.newHashMap();
+		
+				
+		Integer prof = profiloAutonomiaService.calcolaProf(profiloAutonomia.getIndiceADL(),profiloAutonomia.getIndiceSPMSQ(),profiloAutonomia.getIndiceBarthelMobilita(),profiloAutonomia.getPsan(),profiloAutonomia.getIndiceSupportoReteSociale());
+		Integer  psoc = profiloAutonomiaService.calcolaPsoc(profiloAutonomia.getIndiceSupportoReteSociale());
+		map.put("OK", "Calcolo effettuato");
+		map.put("valore PROF ",  prof);
+		map.put("Valore PSOC", psoc);
+		result.setMap(map);
+		
+		
+		//salvo la richiesta
+//		ProfiloAutonomia profAut= profiloAutonomia;
+//		profAut.setValorePROF(prof);
+//		profAut.setValorePSOC(psoc);
+//		profiloAutonomiaService.insert(profAut);
+		
+		return result;
+	}
+	
+	@RequestMapping(value = "/profiloAutonomiaXML", method = RequestMethod.POST,headers="Accept=application/xml")
+	@ResponseBody
+	public ResultDTOXML getprofiloAutonomiaXML(@Valid @RequestBody ProfiloAutonomia profiloAutonomia,Errors errors) throws Exception {
+ 		if (errors.hasErrors()) {
+			ResultDTOXML reserr = new ResultDTOXML();
+			Map<String, Object> maperr = Maps.newHashMap();
+			maperr.put("OK", "Errore nella richiesta");
+			//maperr.put("Codifica Mobilità", null);
+			reserr.setMap(maperr);
+			return reserr;
+		}
+		ResultDTOXML result = new ResultDTOXML();
+		Map<String, Object> map = Maps.newHashMap();
+		
+		Integer prof = profiloAutonomiaService.calcolaProf(profiloAutonomia.getIndiceADL(),profiloAutonomia.getIndiceSPMSQ(),profiloAutonomia.getIndiceBarthelMobilita(),profiloAutonomia.getPsan(),profiloAutonomia.getIndiceSupportoReteSociale());
+		Integer  psoc = profiloAutonomiaService.calcolaPsoc(profiloAutonomia.getIndiceSupportoReteSociale());
+		map.put("OK", "Calcolo effettuato");
+		map.put("valore PROF ",  prof);
+		map.put("Valore PSOC", psoc);
+		result.setMap(map);
+		
+		//salvo la richiesta
+//		ProfiloAutonomia profAut= profiloAutonomia;
+//		profAut.setValorePROF(prof);
+//		profAut.setValorePSOC(psoc);
+//		profiloAutonomiaService.insert(profAut);
+						
+				
+		return result;
+	}
+	
+
+	
+	
+	@RequestMapping(value = "/monitoring/monitoring", method = RequestMethod.GET,headers="Accept=application/xml")
+	@ResponseBody
+	public String getMonitoring() throws Exception {
+		
+		String resultOK ="<html> "+
+						"<head>"+
+						"<style type=\"text/css\"></style>"+
+						"</head>"+
+						"<body>"+
+						"OK"+
+						"</body>"+
+						"</html>";
+		String resultError ="<html> "+
+				"<head>"+
+				"<style type=\"text/css\"></style>"+
+				"</head>"+
+				"<body>"+
+				"ERROR"+
+				"</body>"+
+				"</html>";
+		
+		try {
+//    		IndiceADL monitoring = indiceADLService.selectById(1);
+			
+		} catch (Exception e) {
+			System.out.println("Eccezione : "+ e.getMessage());
+			return resultError;
+		}
+		return resultOK;
+	}
+	
+	@RequestMapping(value = "/monitoring/monitoringADL", method = RequestMethod.GET,headers="Accept=application/xml")
+	@ResponseBody
+	public String getMonitoringADL() throws Exception {
+		
+		String resultOK ="<html> "+
+						"<head>"+
+						"<style type=\"text/css\"></style>"+
+						"</head>"+
+						"<body>"+
+						"OK"+
+						"</body>"+
+						"</html>";
+		String resultError ="<html> "+
+				"<head>"+
+				"<style type=\"text/css\"></style>"+
+				"</head>"+
+				"<body>"+
+				"ERROR"+
+				"</body>"+
+				"</html>";
+		
+		try {
+			IndiceADL indiceADL = new IndiceADL();
+			indiceADL.setfAlimentazione(2);
+			indiceADL.setfBagnoDoccia(2);
+			indiceADL.setfIgienePersonale(1);
+			indiceADL.setfAbbigliamento(2);
+			indiceADL.setfContinenzaIntestinale(5);
+			indiceADL.setfContinenzaUrinaria(5);
+			indiceADL.setfUsoGabinetto(10);
+			
+			
+			int result = indiceADLService.calcolaIndiceADL(indiceADL);
+			if(result== 27){
+				return resultOK;
+			}
+			return resultError;
+
+		} catch (Exception e) {
+			System.out.println("Eccezione : "+ e.getMessage());
+			return resultError;
+		}
+	}
+	
+	
+	@RequestMapping(value = "/monitoring/monitoringBarthel", method = RequestMethod.GET,headers="Accept=application/xml")
+	@ResponseBody
+	public String getMonitoringBarthel() throws Exception {
+		
+		String resultOK ="<html> "+
+						"<head>"+
+						"<style type=\"text/css\"></style>"+
+						"</head>"+
+						"<body>"+
+						"OK"+
+						"</body>"+
+						"</html>";
+		String resultError ="<html> "+
+				"<head>"+
+				"<style type=\"text/css\"></style>"+
+				"</head>"+
+				"<body>"+
+				"ERROR"+
+				"</body>"+
+				"</html>";
+		
+		try {
+			IndiceBarthelMobilita indiceBarthelMobilita = new IndiceBarthelMobilita();
+			indiceBarthelMobilita.setmTrasferimentoLS(7);
+			indiceBarthelMobilita.setmDeambulazione(10);
+			indiceBarthelMobilita.setmScale(10);
+			
+			
+
+			
+			
+			int result = indiceBarthelMobilitaService.calcolaMobilita(indiceBarthelMobilita);
+			if(result== 27){
+				return resultOK;
+			}
+			return resultError;
+
+		} catch (Exception e) {
+			System.out.println("Eccezione : "+ e.getMessage());
+			return resultError;
+		}
+	}
+	
+	@RequestMapping(value = "/monitoring/monitoringSupportoReteSociale", method = RequestMethod.GET,headers="Accept=application/xml")
+	@ResponseBody
+	public String getSupportoReteSociale() throws Exception {
+		
+		String resultOK ="<html> "+
+						"<head>"+
+						"<style type=\"text/css\"></style>"+
+						"</head>"+
+						"<body>"+
+						"OK"+
+						"</body>"+
+						"</html>";
+		String resultError ="<html> "+
+				"<head>"+
+				"<style type=\"text/css\"></style>"+
+				"</head>"+
+				"<body>"+
+				"ERROR"+
+				"</body>"+
+				"</html>";
+		
+		try {
+			IndiceSupportoReteSociale indiceSupportoReteSociale = new IndiceSupportoReteSociale();
+			indiceSupportoReteSociale.setPreparazionePasti(5);
+			indiceSupportoReteSociale.setPuliziaCasa(10);
+			indiceSupportoReteSociale.setLavanderia(5);
+			indiceSupportoReteSociale.setEffettuazioneAcquisti(0);
+			indiceSupportoReteSociale.setAlimentazione(0);
+			indiceSupportoReteSociale.setBagno(0);
+			indiceSupportoReteSociale.setToelettaPersonale(5);
+			indiceSupportoReteSociale.setAbbigliamento(0);
+			indiceSupportoReteSociale.setUsoWC(5);
+			indiceSupportoReteSociale.setAssunzioneMedicinali(0);
+			indiceSupportoReteSociale.setTrasferimenti(15);
+			indiceSupportoReteSociale.setDeambulazione(5);
+			indiceSupportoReteSociale.setSostegnoPsicoAffettivo(0);
+			indiceSupportoReteSociale.setGestioneDenaro(10);
+			indiceSupportoReteSociale.setSupervisioneDiurna(5);
+			indiceSupportoReteSociale.setSupervisioneNotturna(0);
+			
+			
+
+			
+			
+			int result = indiceSupportoReteSocialeService.calcolaIndiceSupportoReteSociale(indiceSupportoReteSociale);
+			if(result== 65){
+				return resultOK;
+			}
+			return resultError;
+
+		} catch (Exception e) {
+			System.out.println("Eccezione : "+ e.getMessage());
+			return resultError;
+		}
+	}
+	@RequestMapping(value = "/salvaAssistito", method = RequestMethod.POST, headers="Accept=application/json")//aggiunto , headers="Accept=application/xml"
+	@ResponseBody
+	public ResultDTO insertDatiAssistito(@RequestBody DatiAssistito datiAssistito) throws Exception {
+		
+		
+		ResultDTO result = new ResultDTO();
+		datiAssistitoService.insert(datiAssistito);
+		Map<String, Object> map = Maps.newHashMap();
+		map.put("OK", "inserimento effettuato");
+		map.put("idAssistito",  datiAssistito.getIdDatiAssistito());
+		result.setMap(map);
+		return result;
+			
+		
+	}
+	
+	@RequestMapping(value = "/salvaAssistitoXML", method = RequestMethod.POST, headers="Accept=application/xml")//aggiunto , headers="Accept=application/xml"
+	@ResponseBody
+	public ResultDTOXML insertDatiAssistitoXML(@RequestBody DatiAssistito datiAssistito) throws Exception {
+		
+		
+		ResultDTOXML result = new ResultDTOXML();
+		 datiAssistitoService.insert(datiAssistito);
+		
+		 
+		
+		Map<String, Object> map = Maps.newHashMap();
+		
+		map.put("OK", "inserimento effettuato");
+		map.put("idAssistito",  datiAssistito.getIdDatiAssistito());
+	
+		result.setMap(map);
+		return result;
+		
+	}
+	
+
+	
+	
+	@RequestMapping(value = "/selectPrestazioniConsigliate", method = RequestMethod.POST, headers="Accept=application/json")
+	@ResponseBody
+	public List<Prestazioni> selectPrestazioniConsigliate(@RequestBody PrestazioniRequestDTO prestazioniRequestDTO) throws Exception {
+		
+		List<Prestazioni> elencoPrestazioni = null ;
+		
+		String adl_ = prestazioniRequestDTO.getRangeADL();
+		String barthel_ = prestazioniRequestDTO.getRangeBarthel();
+		String rete_ = prestazioniRequestDTO.getRangeRete();
+		
+		String resultAdl = adl_.replace(" ", "");
+		String resultBarthel = barthel_.replace(" ", "");
+		String resultRete = rete_.replace(" ", "");
+		
+		String rangeADLResult = prestazioniService.calcolaRangeADL(resultAdl);
+		String rangeBarthelResult = prestazioniService.calcolaRangeBarthel(resultBarthel);
+		String rangeReteResult = prestazioniService.calcolaRangeRete(resultRete);
+
+		elencoPrestazioni = prestazioniService.select(rangeADLResult,rangeBarthelResult,rangeReteResult);
+		
+		return elencoPrestazioni;
+		
+	}
+	
+	@RequestMapping(value = "/selectPrestazioniConsigliateXML", method = RequestMethod.POST, headers="Accept=application/xml")
+	@ResponseBody
+	public ResultDTOXML selectPrestazioniConsigliateXML(@RequestBody PrestazioniRequestDTO prestazioniRequestDTO) throws Exception {
+		
+		List<Prestazioni> elencoPrestazioni = null ;
+		
+		ResultDTOXML result = new ResultDTOXML();
+		Map<String, Object>map = Maps.newHashMap();
+		
+		String adl_ = prestazioniRequestDTO.getRangeADL();
+		String barthel_ = prestazioniRequestDTO.getRangeBarthel();
+		String rete_ = prestazioniRequestDTO.getRangeRete();
+		
+		String resultAdl = adl_.replace(" ", "");
+		String resultBarthel = barthel_.replace(" ", "");
+		String resultRete = rete_.replace(" ", "");
+		
+		String rangeADLResult = prestazioniService.calcolaRangeADL(resultAdl);
+		String rangeBarthelResult = prestazioniService.calcolaRangeBarthel(resultBarthel);
+		String rangeReteResult = prestazioniService.calcolaRangeRete(resultRete);
+
+		elencoPrestazioni = prestazioniService.select(rangeADLResult,rangeBarthelResult,rangeReteResult);
+		
+//		System.out.println("elencoPrestazioni.get(0)" +elencoPrestazioni.get(0));
+		
+		
+		for (int i = 0; i < elencoPrestazioni.size(); i++) {
+			String elPrest=elencoPrestazioni.get(i)+"";
+			
+			String elPrestazioni= elPrest.substring(elPrest.indexOf("=")+1,elPrest.indexOf("}"));
+//			System.out.println("elPrestazioni "+elPrestazioni);
+			
+//			map.put("OK","Calcolo Effettuato");
+			map.put("descrizione"+i,elPrestazioni);
+			
+			 
+		}
+		result.setMap(map);
+		
+		return result;
+		
+		
+		
+	}
+	
+	
+	
+	/**
+	 * Servizio per prendere tutte le prestazioni
+	 */
+	@RequestMapping(value = "/selectPrestazioniXML", method = RequestMethod.POST, headers="Accept=application/xml")
+	@ResponseBody
+	public ResultDTOXML selectPrestazioniXML(@RequestBody PrestazioniRequestDTO prestazioniRequestDTO) throws Exception {
+		
+		List<Prestazioni> elencoPrestazioni = null ;
+		
+		ResultDTOXML result = new ResultDTOXML();
+		Map<String, Object>map = Maps.newHashMap();
+
+		elencoPrestazioni = prestazioniService.selectTutte();
+		
+		
+		for (int i = 0; i < elencoPrestazioni.size(); i++) {
+			String elPrest=elencoPrestazioni.get(i)+"";
+			
+			String elPrestazioni= elPrest.substring(elPrest.indexOf("=")+1,elPrest.indexOf("}"));
+			
+			map.put("descrizione"+i,elPrestazioni);
+			
+		}
+		result.setMap(map);
+		
+		return result;
+		
+		
+	}
+	
+	
+	@RequestMapping(value = "/salvaRisultatiIndici", method = RequestMethod.POST, headers="Accept=application/json")//aggiunto , headers="Accept=application/xml"
+	@ResponseBody
+	public ResultDTO insertRisultatiIndici(@RequestBody RisultatiIndici risultatiIndici) throws Exception {
+		
+		
+		ResultDTO result = new ResultDTO();
+		risultati_indiciService.insert(risultatiIndici);
+		Map<String, Object> map = Maps.newHashMap();
+		map.put("OK", "inserimento effettuato");
+		result.setMap(map);
+		return result;
+			
+		
+	}
+	
+	@RequestMapping(value = "/salvaRisultatiIndiciXML", method = RequestMethod.POST, headers="Accept=application/xml")//aggiunto , headers="Accept=application/xml"
+	@ResponseBody
+	public ResultDTOXML insertRisultatiIndiciXML(@RequestBody RisultatiIndici risultatiIndici) throws Exception {
+		
+		
+		ResultDTOXML result = new ResultDTOXML();
+		risultati_indiciService.insert(risultatiIndici);
+		Map<String, Object> map = Maps.newHashMap();
+		map.put("OK", "inserimento effettuato");
+		result.setMap(map);
+		return result;
+		
+	}
+	
+	
+	
+	@RequestMapping(value = "/salvaPaiPrestazioni", method = RequestMethod.POST, headers="Accept=application/json")//aggiunto , headers="Accept=application/xml"
+	@ResponseBody
+	public ResultDTO insertPaiPrestazioni(@RequestBody Pai_Prestazioni pai_Prestazioni) throws Exception {
+		
+		
+		ResultDTO result = new ResultDTO();
+		pai_prestazioniService.insert(pai_Prestazioni);
+		Map<String, Object> map = Maps.newHashMap();
+		map.put("OK", "inserimento effettuato");
+		result.setMap(map);
+		return result;
+			
+		
+	}
+	
+	@RequestMapping(value = "/salvaPaiPrestazioniXML", method = RequestMethod.POST, headers="Accept=application/xml")//aggiunto , headers="Accept=application/xml"
+	@ResponseBody
+	public ResultDTOXML insertPaiPrestazioniXML(@RequestBody Pai_Prestazioni pai_Prestazioni) throws Exception {
+		
+		
+		ResultDTOXML result = new ResultDTOXML();
+		pai_prestazioniService.insert(pai_Prestazioni);
+		Map<String, Object> map = Maps.newHashMap();
+		map.put("OK", "inserimento effettuato");
+		result.setMap(map);
+		return result;
+		
+	}
+	
+	
+	
+	
+	
+	
+	@RequestMapping(value = "/salvaPAI", method = RequestMethod.POST, headers="Accept=application/json")//aggiunto , headers="Accept=application/xml"
+	@ResponseBody
+	public ResultDTO insertPai(@RequestBody Pai pai) throws Exception {
+		
+		
+		ResultDTO result = new ResultDTO();
+		paiService.insert(pai);
+		Map<String, Object> map = Maps.newHashMap();
+		map.put("OK", "inserimento effettuato");
+		map.put("idPai",  pai.getIdPai());
+		result.setMap(map);
+		return result;
+			
+		
+	}
+	
+	@RequestMapping(value = "/salvaPAIXML", method = RequestMethod.POST, headers="Accept=application/xml")//aggiunto , headers="Accept=application/xml"
+	@ResponseBody
+	public ResultDTOXML insertPAIXML(@RequestBody Pai pai) throws Exception {
+		
+		
+		ResultDTOXML result = new ResultDTOXML();
+		paiService.insert(pai);
+		Map<String, Object> map = Maps.newHashMap();
+		map.put("OK", "inserimento effettuato");
+		map.put("idPai",  pai.getIdPai());
+		result.setMap(map);
+		return result;
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+//    @RequestMapping(method=RequestMethod.GET, produces={"application/xml"} ) 
+//    public @ResponseBody Application generateWadl(HttpServletRequest request) {
+//        Application result = new Application();
+//        Doc doc = new Doc();
+//        doc.setTitle("Spring REST Service WADL");
+//        result.getDoc().add(doc);
+//        Resources wadResources = new Resources();
+//        wadResources.setBase(getBaseUrl(request));
+//          
+//        Map<RequestMappingInfo, HandlerMethod> handletMethods = handlerMapping.getHandlerMethods();
+//        for (Map.Entry<RequestMappingInfo, HandlerMethod> entry : handletMethods.entrySet()) {
+//             
+//              
+//            HandlerMethod handlerMethod = entry.getValue();
+//             
+//            Object object = handlerMethod.getBean();
+//            Object bean = webApplicationContext.getBean(object.toString());
+//             
+//            boolean isRestContoller = bean.getClass().isAnnotationPresent(RestController.class);
+//            if(!isRestContoller) {
+//                continue;
+//            }
+//            RequestMappingInfo mappingInfo = entry.getKey();
+//              
+//            Set<String> pattern =  mappingInfo.getPatternsCondition().getPatterns();
+//            Set<RequestMethod> httpMethods =  mappingInfo.getMethodsCondition().getMethods();
+//            ProducesRequestCondition producesRequestCondition = mappingInfo.getProducesCondition();
+//            Set<MediaType> mediaTypes = producesRequestCondition.getProducibleMediaTypes();
+//            Resource wadlResource = null; 
+//            for (RequestMethod httpMethod : httpMethods) {
+//                org.jvnet.ws.wadl.Method wadlMethod = new org.jvnet.ws.wadl.Method();
+//      
+//                for (String uri : pattern) {
+//                    wadlResource = createOrFind( uri,  wadResources); 
+//                    wadlResource.setPath(uri);      
+//                }
+//                  
+//                wadlMethod.setName(httpMethod.name());
+//                Method javaMethod = handlerMethod.getMethod();
+//                wadlMethod.setId(javaMethod.getName());
+//                Doc wadlDocMethod = new Doc();
+//                wadlDocMethod.setTitle(javaMethod.getDeclaringClass().getSimpleName()+"."+javaMethod.getName());
+//                wadlMethod.getDoc().add(wadlDocMethod);
+//                  
+//                // Request
+//                Request wadlRequest = new Request();
+//                  
+//                Annotation[][] annotations = javaMethod.getParameterAnnotations();
+//                Class<?>[] paramTypes = javaMethod.getParameterTypes();
+//                int i = 0;
+//                for (Annotation[] annotation : annotations) {
+//                    Class<?> paramType =paramTypes[i];
+//                    i++;
+//                    for (Annotation annotation2 : annotation) {
+//                     
+//                        if (annotation2 instanceof RequestParam ) {
+//                            RequestParam param2 = (RequestParam)annotation2;
+//                            Param waldParam = new Param();
+//                            QName nm = convertJavaToXMLType(paramType);
+//                            waldParam.setName(param2.value());
+//                            waldParam.setStyle(ParamStyle.QUERY);
+//                            waldParam.setRequired(param2.required());
+//                            String defaultValue = cleanDefault(param2.defaultValue());
+//                            if ( !defaultValue.equals("") ) {
+//                                waldParam.setDefault(defaultValue);
+//                            }
+//                            waldParam.setType(nm);
+//                            wadlRequest.getParam().add(waldParam);
+//                        } else if ( annotation2 instanceof PathVariable ) {
+//                            PathVariable param2 = (PathVariable)annotation2;
+//                            QName nm = convertJavaToXMLType(paramType);
+//                            Param waldParam = new Param();
+//                            waldParam.setName(param2.value());
+//                            waldParam.setStyle(ParamStyle.TEMPLATE);
+//                            waldParam.setRequired(true);
+//                            wadlRequest.getParam().add(waldParam);
+//                            waldParam.setType(nm);
+//                        }
+//                    }
+//                }
+//                if ( ! wadlRequest.getParam().isEmpty() ) {
+//                    wadlMethod.setRequest(wadlRequest);
+//                }
+//                  
+//                // Response
+//                if ( !mediaTypes.isEmpty() ) {
+//                    Response wadlResponse = new Response();
+//                    Class methodReturn = handlerMethod.getReturnType().getClass();
+//                    ResponseStatus status = handlerMethod.getMethodAnnotation(ResponseStatus.class);
+//                    if(status==null) {
+//                        wadlResponse.getStatus().add((long)(HttpStatus.OK.value()));
+//                    }else {
+//                        HttpStatus httpcode = status.value();
+//                        wadlResponse.getStatus().add((long)httpcode.value());
+//                    }
+// 
+//                    for (MediaType mediaType : mediaTypes) {
+//                        Representation wadlRepresentation = new Representation();
+//                        wadlRepresentation.setMediaType(mediaType.toString());
+//                        wadlResponse.getRepresentation().add(wadlRepresentation);
+//                    }
+//                    wadlMethod.getResponse().add(wadlResponse);
+//                }
+//                  
+//                wadlResource.getMethodOrResource().add(wadlMethod);
+//                  
+//            }
+//              
+//     
+//              
+//        }
+//        result.getResources().add(wadResources);
+//          
+//        return result;
+//    }
+//    private QName convertJavaToXMLType(Class<?> type) {
+//        QName nm = new QName("");
+//        String classname=type.toString();
+//        if (classname.indexOf("String")>=0) {
+//             nm = new QName(xs_namespace,"string","xs");
+//             
+//        }else if(classname.indexOf("Integer")>=0) {
+//             nm = new QName(xs_namespace,"int","xs");
+//        }
+//        return nm;
+//    }
+//    private Resource createOrFind(String uri, Resources wadResources) {
+//          List<Resource> current = wadResources.getResource();
+//          for(Resource resource:current) {
+//              if(resource.getPath().equalsIgnoreCase(uri)){
+//                  return resource;
+//              }
+//          }
+//          Resource wadlResource = new  Resource();
+//          current.add(wadlResource);
+//          return wadlResource;
+//    }
+//    private String getBaseUrl (HttpServletRequest request) {
+//        String requestUri = request.getRequestURI();
+//        return request.getScheme()+"://"+ request.getServerName()+":"+ request.getServerPort() + requestUri;
+//    }
+//      
+//    private String cleanDefault(String value) {
+//        value = value.replaceAll("\t", "");
+//        value = value.replaceAll("\n", "");
+//        return value;
+//    }
+}
+
+

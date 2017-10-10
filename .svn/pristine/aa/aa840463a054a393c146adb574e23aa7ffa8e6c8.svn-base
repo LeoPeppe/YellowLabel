@@ -1,0 +1,27 @@
+package it.cle.webproject.dto;
+
+import java.io.Serializable;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement(name="indice_adl_result")
+public class IndiceADLXMLDTO implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	Integer indiceADLValue;
+
+	public Integer getIndiceADLValue() {
+		return indiceADLValue;
+	}
+	@XmlElement(name="value")
+	public void setIndiceADLValue(Integer indiceADLValue) {
+		this.indiceADLValue = indiceADLValue;
+	}
+	
+	
+	
+
+}

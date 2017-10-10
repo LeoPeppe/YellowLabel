@@ -1,0 +1,28 @@
+package it.cle.webproject.dto;
+
+import java.io.Serializable;
+import java.util.Map;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import com.google.common.collect.Maps;
+
+@XmlRootElement(name="resultj")
+public class ResultDTO implements Serializable{
+	
+	private static final long serialVersionUID = 1L;
+	
+	Map<String, Object>  map = Maps.newHashMap();
+
+	
+	public Map<String, Object> getMap() {
+		return map;
+	}
+
+	@XmlElement(name="map")
+	public void setMap(Map<String, Object> map) {
+		this.map = map;
+	}
+
+}

@@ -1,0 +1,12 @@
+it/cle/webproject/utils/Utils.class
+it/cle/webproject/ws/WebServicesRepository.class
+it/cle/webproject/config/context/MessageContext.class
+it/cle/webproject/validation/DefaultExceptionHandler.class
+it/cle/webproject/config/context/TestMessageContext.class
+it/cle/webproject/config/WebMvcConfig.class
+it/cle/webproject/initializer/WebAppInitializer.class
+it/cle/webproject/config/SimpleCORSFilter.class
+it/cle/webproject/dto/ResultDTO.class
+it/cle/webproject/dto/ResultDTOXML.class
+it/cle/webproject/config/WebPropertyPlaceholderConfig.class
+it/cle/webproject/config/WebAppConfig.class

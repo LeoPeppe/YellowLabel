@@ -1,0 +1,68 @@
+package it.cle.webproject.dto;
+
+import java.io.Serializable;
+import java.util.List;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlElements;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
+import org.w3c.dom.Document;
+
+import it.cle.project.dto.fattura.FatturaElettronicaDTO;
+
+
+@XmlRootElement(name="fattura_xml")
+@XmlType(propOrder={"esito", "fattura", "errore"})
+public class FatturaXMLDTO implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	String esito;
+//	String fattura;
+	String errore;
+	List<FatturaElettronicaDTO> fattura ;
+	
+	
+	
+	public String getEsito() {
+		return esito;
+	}
+	@XmlElement
+	public void setEsito(String esito) {
+		this.esito = esito;
+	}
+/*	public String getFattura() {
+		return fattura;
+	}
+	@XmlElement
+	public void setFattura(String fattura) {
+		this.fattura = fattura;
+	}*/
+	public String getErrore() {
+		return errore;
+	}
+	@XmlElement
+	public void setErrore(String errore) {
+		this.errore = errore;
+	}
+	public List<FatturaElettronicaDTO> getFattura() {
+		return fattura;
+	}
+	
+	@XmlElementWrapper(name="fattura")
+	@XmlElement(name="FatturaElettronica")
+	public void setFattura(List<FatturaElettronicaDTO> fattura) {
+		this.fattura = fattura;
+	}
+	
+	
+
+
+	
+	
+
+}

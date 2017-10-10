@@ -1,0 +1,89 @@
+package it.cle.webproject.ws;
+
+
+
+import javax.inject.Inject;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.AnnotationConfigContextLoader;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.ResultHandler;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.WebApplicationContext;
+
+import static org.junit.Assert.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+
+	 
+
+
+
+
+@ContextConfiguration(loader = AnnotationConfigContextLoader.class  )
+@RunWith(SpringJUnit4ClassRunner.class)
+@WebAppConfiguration
+
+
+/**
+ * Testsuite CDPWebService
+ * @author pierluigi.anaclerio
+ *
+ */
+public class WebServicesRepositoryTest {
+	
+	
+	 private MockMvc mockMvc;
+	 
+	 
+	 
+	 WebServicesRepository wsr;
+	
+	 //@Autowired
+	 //private WebApplicationContext wac;
+	 
+	 
+	 @Before
+	  public void setUp() throws Exception {
+
+	   //this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+	   this.mockMvc = MockMvcBuilders.standaloneSetup(new WebServicesRepository()).build();
+	  }
+	 
+	 @Test
+	 public void testIndiceADL() throws Exception{
+		 final String mediaType = "application/xml;charset=UTF-8";
+		 
+		 /*MockHttpServletRequestBuilder postRequest =  post("/indiceADL").contentType(MediaType.APPLICATION_JSON);
+		 postRequest = postRequest.param("fAlimentazione","2", "fBagnoDoccia","2", "fIgienePersonale","1", "fAbbigliamento","2", "fContinenzaIntestinale","5", "fContinenzaUrinaria"
+			 , "5", "fUsoGabinetto","10").contentType(MediaType.APPLICATION_JSON);
+		 ResultActions resultActions = mockMvc.perform(postRequest);
+		
+		 resultActions.andExpect(content().contentType(mediaType));
+		 resultActions.andExpect(status().isOk());*/ 
+		 
+		this.mockMvc.perform(post("/indiceADLXML").contentType(MediaType.APPLICATION_XML).content("<indice_adl><fAlimentazione> 2 </fAlimentazione>"
+				+"<fBagnoDoccia> 2 </fBagnoDoccia>"+
+				"<fIgienePersonale> 1 </fIgienePersonale>"+"<fAbbigliamento> 2 </fAbbigliamento>"+"<fContinenzaIntestinale> 5 </fContinenzaIntestinale>"+
+				"<fContinenzaUrinaria> 5 </fContinenzaUrinaria>"+"<fUsoGabinetto> 10 </fUsoGabinetto>"+ "<valoreIndiceADL> 27</valoreIndiceADL>"+"</indice_adl>"))
+		.andExpect(status().isOk());
+		//assertTrue(true);
+	}
+
+	
+
+	
+	
+
+}

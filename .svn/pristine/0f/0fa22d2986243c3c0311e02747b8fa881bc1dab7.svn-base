@@ -1,0 +1,66 @@
+package it.cle.webproject.controller;
+
+import org.springframework.stereotype.Controller;
+
+@Controller
+class IndexController {
+	/*
+
+	@RequestMapping("/greeting")
+    @ResponseBody
+    public HttpEntity<TestEntity> testEntity(@RequestParam(value = "idTestEntity", required = false, defaultValue = "1") String idTestEntity) {
+
+		TestEntity testEntity = new TestEntity();
+		testEntity.add(linkTo(methodOn(IndexController.class).testEntity(idTestEntity)).withSelfRel());
+
+        return new ResponseEntity<TestEntity>(testEntity, HttpStatus.OK);
+    }
+
+	
+	@RequestMapping("/jsonBarthel")
+    @ResponseBody
+    public HttpEntity<IndiceBarthel> indiceBarthel(@RequestParam(value = "idIndiceBarthel", required = false, defaultValue = "1") String idIndiceBarthel) {
+
+		IndiceBarthel indiceBarthel = new IndiceBarthel();
+		//indiceBarthel.add(linkTo(methodOn(IndexController.class).indiceBarthel(idIndiceBarthel)).withSelfRel());
+
+        return new ResponseEntity<IndiceBarthel>(indiceBarthel, HttpStatus.OK);
+    }*/
+
+	/*@RequestMapping(value="/secured/welcome", method = RequestMethod.GET)
+	public String printWelcome(ModelMap model, Principal principal ) {
+ 
+		String name = principal.getName();
+		model.addAttribute("username", name);
+		model.addAttribute("message", "BENVENUTO!!!");
+		return "hello";
+ 
+	}*/
+
+	/*@RequestMapping(value="/login", method = RequestMethod.GET)
+	public String login(ModelMap model) {
+ 
+		return "login";
+ 
+	}*/
+ 
+	/*@RequestMapping(value="/loginfailed", method = RequestMethod.GET)
+	public String loginerror(ModelMap model, Principal principal ) {
+ 
+		/*model.addAttribute("error", "true");
+		return "login";*/
+		
+		//String name = principal.getName();
+		//model.addAttribute("username", name);
+		//model.addAttribute("message", "Errore");
+		//return "hello";
+ 
+	//}
+ 
+	/*@RequestMapping(value="/logout", method = RequestMethod.GET)
+	public String logout(ModelMap model) {
+ 
+		return "login";
+ 
+	}*/
+}
